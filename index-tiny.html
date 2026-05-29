@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Auralis">
+<meta name="theme-color" content="#020508">
+<title>Auralis — Hi-Res Audio Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="app.css">
+<link rel="manifest" href="manifest.json">
+</head>
+
+<div id="app">
+
+  <!-- ICON BAR -->
+  <nav id="iconbar">
+    <div class="ib-logo">A</div>
+    <button class="ib-btn on" data-nav="home"    onclick="go('home')"   >⌂<span class="ib-tip">Home</span></button>
+    <button class="ib-btn"    data-nav="library" onclick="go('library')">⊞<span class="ib-tip">Library</span></button>
+    <button class="ib-btn"    data-nav="artists" onclick="go('artists')">♪<span class="ib-tip">Artists</span></button>
+    <div class="ib-sep"></div>
+    <button class="ib-btn" onclick="openImport()">⊕<span class="ib-tip">Import Audio</span></button>
+    <div class="ib-gap"></div>
+    <button class="ib-btn" data-nav="ai" onclick="go('ai')">✦<span class="ib-tip">AI Recommendations</span></button>
+    <button class="ib-btn" data-nav="settings" onclick="go('settings')">⚙<span class="ib-tip">Settings</span></button>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-scroll">
+      <div class="sb-lbl">Library</div>
+      <div class="sb-item on" data-nav="home"    onclick="go('home')"   ><span class="sb-icon">⌂</span>Home</div>
+      <div class="sb-item"    data-nav="library" onclick="go('library')"><span class="sb-icon">⊞</span>Library<span class="sb-count" id="libCount">0</span></div>
+      <div class="sb-item"    data-nav="artists" onclick="go('artists')"><span class="sb-icon">♪</span>Artists</div>
+      <div class="sb-lbl" style="margin-top:8px">Collection</div>
+      <div class="sb-item" onclick="filterFmt('FLAC')"><span class="sb-icon">⬡</span>FLAC Hi-Res</div>
+      <div class="sb-item" onclick="filterFmt('DSD')"><span class="sb-icon">◈</span>DSD</div>
+      <div class="sb-item" onclick="filterFmt('MQA')"><span class="sb-icon">◉</span>MQA</div>
+      <div class="sb-sep" style="height:1px;background:var(--b1);margin:8px 12px"></div>
+      <div class="sb-item" data-nav="ai" onclick="go('ai')" style="color:var(--ac)"><span class="sb-icon">✦</span>AI Recommendations</div>
+      <div class="sb-item" onclick="openImport()"><span class="sb-icon">⊕</span>Import Audio</div>
+      <div class="sb-item" onclick="showConnectModal()"><span class="sb-icon">⚡</span>Server Connection</div>
+    </div>
+    <div class="sb-footer">
+      <div class="sb-db">
+        <div class="sb-db-dot"></div>
+        <div>
+          <div class="sb-db-text" id="dbName">Auralis</div>
+          <div class="sb-db-text" style="color:var(--t4);font-size:9px" id="dbSub">No tracks loaded</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main">
+    <div id="topbar">
+      <div class="tb-title" id="pageTitle">Home</div>
+      <input class="tb-search" type="search" placeholder="⌕  Search albums, artists…" oninput="onSearch(this.value)" id="searchBox">
+      <div class="tb-right">
+        <button class="tb-btn accent" id="navStatusBtn" onclick="NAV.connected?go('settings'):showConnectModal()">⚡ Navidrome</button>
+      </div>
+    </div>
+
+    <!-- Waveform bar -->
+    <div id="wv-wrap" onclick="seekClick(event)">
+      <canvas id="wv-canvas"></canvas>
+      <div class="wv-label" id="wvLabel">—</div>
+    </div>
+
+    <!-- Album detail (hidden by default) -->
+    <div id="album-view"></div>
+
+    <!-- Main page content -->
+    <div id="page"></div>
+  </main>
+
+  <!-- PLAYBAR -->
+  <div id="playbar">
+    <div class="pb-left">
+      <div class="pb-art" id="pbArt">🎵</div>
+      <div class="pb-info">
+        <div class="pb-title"  id="pbTitle">Select a track</div>
+        <div class="pb-artist" id="pbArtist">Import your library to begin</div>
+        <div class="pb-fmt"    id="pbFmt">—</div>
+      </div>
+      <button class="pb-love" id="loveBtn" onclick="toggleLove()">♡</button>
+    </div>
+    <div class="pb-center">
+      <div class="pb-ctrls">
+        <button class="pb-ctrl" id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle">⇄</button>
+        <button class="pb-ctrl" onclick="skipPrev()" title="Previous">⏮</button>
+        <button class="pb-play" id="playBtn" onclick="togglePlay()">▶</button>
+        <button class="pb-ctrl" onclick="skipNext()" title="Next">⏭</button>
+        <button class="pb-ctrl" id="repeatBtn" onclick="toggleRepeat()" title="Repeat">↻</button>
+      </div>
+      <div class="pb-prog">
+        <span class="pb-time" id="pbCur">0:00</span>
+        <div class="pb-track" id="pbTrack">
+          <div class="pb-fill" id="pbFill" style="width:0%"></div>
+        </div>
+        <span class="pb-time" id="pbDur">0:00</span>
+      </div>
+    </div>
+    <div class="pb-right">
+      <div class="pb-vol">
+        🔊
+        <div class="pb-vol-bar" id="volBar" onclick="setVol(event)">
+          <div class="pb-vol-fill" id="volFill" style="width:80%"></div>
+        </div>
+      </div>
+      <button class="pb-ctrl" onclick="openFs()" title="Fullscreen">⛶</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div id="import-modal">
+  <div class="imp-card">
+    <button class="imp-close" onclick="closeImport()">✕</button>
+    <div class="imp-title">Import Audio Library</div>
+    <div class="imp-sub">Supports FLAC, DSD, MQA, WAV, AIFF, ALAC, MP3. Metadata is read from ID3 tags automatically.</div>
+    <div class="drop-zone" id="dropZone">
+      <div class="dz-icon">🎵</div>
+      <div class="dz-title">Drop files or folder here</div>
+      <div class="dz-sub">Click to browse files</div>
+      <div class="dz-fmts">
+        <span class="fmt-tag fmt-hi">FLAC</span><span class="fmt-tag fmt-hi">DSD</span>
+        <span class="fmt-tag fmt-hi">MQA</span><span class="fmt-tag fmt-hi">ALAC</span>
+        <span class="fmt-tag fmt-lo">WAV</span><span class="fmt-tag fmt-lo">AIFF</span>
+        <span class="fmt-tag fmt-lo">MP3</span><span class="fmt-tag fmt-lo">AAC</span>
+      </div>
+    </div>
+    <input type="file" id="fileInput" multiple accept=".flac,.dsf,.dff,.wav,.aiff,.aif,.alac,.mp3,.aac,.m4a,.mqa" style="display:none">
+    <input type="file" id="folderInput" multiple webkitdirectory accept=".flac,.dsf,.dff,.wav,.aiff,.aif,.alac,.mp3,.aac,.m4a,.mqa" style="display:none">
+    <div class="imp-or">or</div>
+    <button class="imp-folder" onclick="document.getElementById('folderInput').click()">📁 Select Folder</button>
+    <div class="imp-prog" id="impProg">
+      <div class="imp-prog-hdr"><span id="impTtl">Scanning…</span><span id="impPct">0%</span></div>
+      <div class="imp-bar"><div class="imp-bar-fill" id="impBar" style="width:0%"></div></div>
+      <div class="imp-log" id="impLog"></div>
+    </div>
+    <div class="imp-result" id="impResult">
+      <div class="imp-res-title">✓ Import Complete</div>
+      <div class="imp-res-row"><span>Files scanned</span><span class="imp-res-v" id="irScanned">—</span></div>
+      <div class="imp-res-row"><span>Tracks imported</span><span class="imp-res-v" id="irImported" style="color:var(--green)">—</span></div>
+      <div class="imp-res-row"><span>Hi-res files</span><span class="imp-res-v" id="irHires" style="color:var(--gold)">—</span></div>
+      <div class="imp-res-row"><span>Formats</span><span class="imp-res-v" id="irFmts">—</span></div>
+      <div class="imp-res-row"><span>Albums</span><span class="imp-res-v" id="irAlbums">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN NOW PLAYING -->
+<div id="fullscreen">
+  <div class="fs-bg" id="fsBg"></div>
+  <div class="fs-ov"></div>
+  <button class="fs-close" onclick="closeFs()">✕</button>
+  <div class="fs-body">
+    <div class="fs-art" id="fsArt">🎵</div>
+    <div class="fs-title"  id="fsTitle">—</div>
+    <div class="fs-artist" id="fsArtist">—</div>
+    <div class="fs-tags"   id="fsTags"></div>
+    <canvas class="fs-wv" id="fs-wv-canvas"></canvas>
+    <div class="fs-ctrls">
+      <button class="fs-ctrl" onclick="skipPrev()">⏮</button>
+      <button class="fs-play" id="fsPlay" onclick="togglePlay()">▶</button>
+      <button class="fs-ctrl" onclick="skipNext()">⏭</button>
+    </div>
+    <div class="fs-prog">
+      <span id="fsCur">0:00</span>
+      <div class="fs-track" id="fsTrack"><div class="fs-fill" id="fsFill" style="width:0%"></div></div>
+      <span id="fsDur">0:00</span>
+    </div>
+    <div class="fs-analytics" id="fsAnalytics"></div>
+  </div>
+</div>
+
+<!-- MOBILE -->
+<nav id="mob-nav">
+  <button class="mob-btn on" data-nav="home"    onclick="go('home')"   ><span class="mob-icon">⌂</span>Home</button>
+  <button class="mob-btn"    data-nav="library" onclick="go('library')"><span class="mob-icon">⊞</span>Library</button>
+  <button class="mob-btn"    data-nav="ai"      onclick="go('ai')"   ><span class="mob-icon">✦</span>AI</button>
+  <button class="mob-btn"                       onclick="openImport()" ><span class="mob-icon">⊕</span>Import</button>
+  <button class="mob-btn"    data-nav="artists" onclick="go('artists')"><span class="mob-icon">♪</span>Artists</button>
+  <button class="mob-btn"    data-nav="settings"onclick="go('settings')"><span class="mob-icon">⚙</span>Settings</button>
+</nav>
+<div id="mob-np" class="hidden" onclick="openFs()">
+  <img class="mob-np-art" id="mobArt" src="" alt="">
+  <div class="mob-np-info">
+    <div class="mob-np-title" id="mobTitle">—</div>
+    <div class="mob-np-sub"   id="mobSub">—</div>
+  </div>
+  <button class="mob-np-btn" id="mobPlay" onclick="event.stopPropagation();togglePlay()">▶</button>
+</div>
+<div id="toasts"></div>
+
+<!-- CONNECT MODAL — shown when no server credentials saved -->
+<div id="connect-modal" style="display:flex;position:fixed;inset:0;z-index:1000;background:rgba(2,5,8,.97);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:20px">
+  <div style="background:#0d1a27;border:1px solid rgba(77,184,255,.25);border-radius:20px;padding:36px;max-width:420px;width:100%;box-shadow:0 40px 80px rgba(0,0,0,.9)">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="font-family:Georgia,serif;font-style:italic;font-size:36px;color:#4db8ff;letter-spacing:.2em;margin-bottom:6px">auralis</div>
+      <div style="font-family:monospace;font-size:10px;color:rgba(238,242,247,.3);letter-spacing:.2em">HI-RES AUDIO LIBRARY</div>
+    </div>
+    <div style="font-size:14px;font-weight:600;color:#eef2f7;margin-bottom:6px">Connect to your library</div>
+    <div style="font-size:13px;color:rgba(238,242,247,.55);margin-bottom:22px;line-height:1.65">Your Hi-Res library streams from your QNAP via Navidrome. Enter your credentials to connect.</div>
+    <div style="margin-bottom:14px">
+      <div style="font-family:monospace;font-size:9px;letter-spacing:.14em;color:rgba(238,242,247,.8);margin-bottom:6px">USERNAME</div>
+      <input id="cnxUser" type="text" autocomplete="username" placeholder="Navidrome username" style="width:100%;background:#1a2a3a;border:2px solid rgba(77,184,255,.4);border-radius:8px;padding:13px 14px;font-size:15px;color:#ffffff;outline:none;font-family:system-ui;-webkit-appearance:none">
+    </div>
+    <div style="margin-bottom:22px">
+      <div style="font-family:monospace;font-size:9px;letter-spacing:.14em;color:rgba(238,242,247,.8);margin-bottom:6px">PASSWORD</div>
+      <input id="cnxPass" type="password" autocomplete="current-password" placeholder="Navidrome password" style="width:100%;background:#1a2a3a;border:2px solid rgba(77,184,255,.4);border-radius:8px;padding:13px 14px;font-size:15px;color:#ffffff;outline:none;font-family:system-ui;-webkit-appearance:none">
+    </div>
+    <button onclick="connectNow()" id="cnxBtn" style="width:100%;padding:13px;background:#4db8ff;color:#020508;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s">Connect to Library →</button>
+    <div id="cnxErr" style="margin-top:10px;font-family:monospace;font-size:11px;color:#ff5f72;text-align:center;display:none"></div>
+    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);font-family:monospace;font-size:9px;color:rgba(238,242,247,.2);text-align:center;line-height:1.8">
+      programmes-financing-brokers-continuity.trycloudflare.com<br>
+      Credentials stored locally · Never shared
+    </div>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html<script src="app.js"></script>
+<script>if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(function(){});
+}</script>
+</html>
