@@ -1,81 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Auralis Deploy</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#020508;color:#eef2f7;font-family:system-ui;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
-.card{background:#0d1a27;border:1px solid rgba(77,184,255,.2);border-radius:16px;padding:28px;max-width:460px;width:100%}
-.logo{font-family:Georgia,serif;font-style:italic;font-size:28px;color:#4db8ff;letter-spacing:.2em;margin-bottom:4px}
-.sub{font-size:10px;color:rgba(238,242,247,.25);letter-spacing:.18em;margin-bottom:24px}
-.btn{width:100%;padding:14px;background:#4db8ff;color:#020508;border:none;border-radius:8px;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:12px}
-.btn:active{opacity:.8}
-.btn.green{background:#3ecf7a}
-.btn.red{background:rgba(255,95,114,.15);color:#ff5f72;border:1px solid rgba(255,95,114,.3)}
-.log{background:rgba(0,0,0,.4);border-radius:8px;padding:12px;font-family:monospace;font-size:11px;line-height:1.9;max-height:200px;overflow-y:auto;margin-top:12px;display:none}
-.ok{color:#3ecf7a}.err{color:#ff5f72}.dim{color:rgba(238,242,247,.35)}
-.info{font-size:13px;color:rgba(238,242,247,.5);line-height:1.6;margin-bottom:20px}
-</style>
-</head>
-<body>
-<div class="card">
-<div class="logo">auralis</div>
-<div class="sub">GITHUB AUTO-DEPLOY</div>
-<div class="info">Pushes the fixed index.html directly to GitHub. Vercel deploys automatically.</div>
-<button class="btn" id="btn" onclick="run()">⬆ Push to GitHub → Deploy</button>
-<div class="log" id="log"></div>
-</div>
-<script>
-const TOKEN = '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';
-const REPO = 'Murfscv360/High-Resolution-Audio';
-
-function log(msg, cls) {
-var l = document.getElementById('log');
-l.style.display = 'block';
-l.innerHTML += '<div class="'+(cls||'dim')+'">'+msg+'</div>';
-l.scrollTop = l.scrollHeight;
-}
-
-async function run() {
-var btn = document.getElementById('btn');
-btn.disabled = true;
-btn.textContent = 'Running…';
-document.getElementById('log').innerHTML = '';
-
-try {
-// 1. Get SHA
-log('Getting current file SHA…');
-var r = await fetch('https://api.github.com/repos/'+REPO+'/contents/index.html', {
-headers: {'Authorization':'Bearer '+TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}
+// Auralis fix.js — patches connect modal visibility
+(function() {
+function applyFix() {
+var modal = document.getElementById('connect-modal');
+if (!modal) return;
+modal.style.display = 'flex';
+var user = document.getElementById('cnxUser');
+var pass = document.getElementById('cnxPass');
+[user, pass].forEach(function(el) {
+if (!el) return;
+el.style.background = '#1a2a3a';
+el.style.border = '2px solid rgba(77,184,255,.4)';
+el.style.color = '#ffffff';
+el.style.fontSize = '16px';
+el.style.padding = '13px 14px';
+el.style.width = '100%';
+el.style.borderRadius = '8px';
+el.style.outline = 'none';
+el.style.boxSizing = 'border-box';
 });
-if (!r.ok) throw new Error('GitHub auth failed: '+r.status);
-var d = await r.json();
-var sha = d.sha;
-log('SHA: '+sha.slice(0,8)+'…','ok');
-
-// 2. Fetch latest index.html from Claude output URL
-log('Fetching fixed index.html…');
-var r2 = await fetch('https://hifiaudio.flynns-arcade.app/?v='+Date.now());
-var content = await r2.text();
-
-// 3. Apply connect modal fix — make visible by default
-if (content.includes('id="connect-modal"')) {
-content = content.replace(
-'id="connect-modal" style="display:none',
-'id="connect-modal" style="display:flex'
-);
-log('Connect modal set to visible','ok');
+var btn = document.getElementById('cnxBtn');
+if (btn) { btn.style.fontSize = '16px'; btn.style.padding = '16px'; }
+var u = localStorage.getItem('nav_user');
+var p = localStorage.getItem('nav_pass');
+if (u && p) modal.style.display = 'none';
 }
-
-// 4. Push to GitHub
-log('Pushing to GitHub…');
-var b64 = btoa(unescape(encodeURIComponent(content)));
-var r3 = await fetch('https://api.github.com/repos/'+REPO+'/contents/index.html', {
-method: 'PUT',
-headers: {'Authorization':'Bearer '+TOKEN,'Accept':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','Content-Type':'application/json'},
-body: JSON.stringify({message:'fix: Connect modal visible on load',content:b64,sha:sha})
-});
-if (!r3.ok) { var e=await r3.json(); throw new Error(e.message||r3.status); }
-var d3 = await r3
+if (document.readyState === 'loading') {
+document.addEventListener('DOMContentLoaded', applyFix);
+} else { applyFix(); }
+})();
