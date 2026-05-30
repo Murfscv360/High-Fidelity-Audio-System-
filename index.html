@@ -4263,27 +4263,6 @@ function renderConnect() {
   '</div>';
 }
 
-async function connectNow() {
-  var user = document.getElementById('cnxUser') ? document.getElementById('cnxUser').value.trim() : '';
-  var pass = document.getElementById('cnxPass') ? document.getElementById('cnxPass').value : '';
-  var err  = document.getElementById('cnxErr');
-  if (!user || !pass) {
-    if (err) { err.style.display='block'; err.textContent='Please enter username and password'; }
-    return;
-  }
-  if (err) err.style.display = 'none';
-  var btn = document.getElementById('cnxBtn');
-  if (btn) { btn.textContent='Connecting…'; btn.style.opacity='0.6'; }
-  var ok = await navConnect(user, pass);
-  if (!ok) {
-    if (btn) { btn.textContent='Connect to Library →'; btn.style.opacity='1'; }
-    if (err) { err.style.display='block'; err.textContent='Connection failed — check credentials'; }
-  } else {
-    var m = document.getElementById('connect-modal');
-    if (m) m.style.display = 'none';
-    go('home');
-  }
-}
 function renderNavAlbumShell(alb) {
   var av = document.getElementById('album-view');
   var bgStyle = alb.artLarge ? 'background-image:url('+alb.artLarge+')' : '';
