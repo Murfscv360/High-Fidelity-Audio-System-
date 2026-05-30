@@ -820,11 +820,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   cursor:pointer; transition:background .15s,color .15s;
 }
 .av2-back:hover{ background:var(--b1); color:var(--t1); }
-.av2{ padding:20px 28px 60px; max-width:1480px; margin:0 auto; display:grid; grid-template-columns:1fr 320px; gap:28px; }
+/* Tidal-style — album view: tracks given primary width, rail only on very wide screens */
+.av2{ padding:32px 40px 60px; max-width:1600px; margin:0 auto; display:grid; grid-template-columns:1fr 320px; gap:36px; }
 .av2-main{ min-width:0; }
 .av2-hero{
-  display:grid; grid-template-columns:200px 1fr; gap:24px;
-  align-items:end; margin-bottom:24px;
+  display:grid; grid-template-columns:300px 1fr; gap:36px;
+  align-items:end; margin-bottom:32px;
 }
 .av2-art{
   width:100%; aspect-ratio:1; border-radius:10px; overflow:hidden;
@@ -837,12 +838,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   text-transform:uppercase; font-weight:500;
 }
 .av2-title{
-  font-family:var(--ff-b); font-weight:700; font-size:34px; line-height:1.05;
-  letter-spacing:-0.02em; color:var(--t1); margin:0;
+  font-family:var(--ff-b); font-weight:800; font-size:48px; line-height:1;
+  letter-spacing:-0.03em; color:var(--t1); margin:0;
 }
 .av2-artist{
-  font-family:var(--ff-b); font-weight:500; font-size:18px; color:var(--t1);
-  letter-spacing:-0.005em;
+  font-family:var(--ff-b); font-weight:600; font-size:18px; color:var(--t1);
+  letter-spacing:-0.005em; margin-top:4px;
 }
 .av2-facts{
   display:flex; gap:10px; flex-wrap:wrap;
@@ -854,16 +855,26 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   content:""; display:inline-block; margin-left:10px;
   width:3px; height:3px; background:var(--t4); border-radius:50%; vertical-align:middle;
 }
-.av2-actions{ display:flex; gap:10px; margin-top:16px; }
+/* Tidal-style pill audio specs */
+.av2-specs{ display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.av2-spec{
+  display:inline-flex; align-items:center; padding:5px 11px;
+  font-family:var(--ff-m); font-size:10.5px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--t2);
+  background:var(--b0); border:1px solid var(--b1); border-radius:14px;
+}
+.av2-spec.hi{ background:rgba(232,179,58,.12); border-color:rgba(232,179,58,.32); color:var(--gold); }
+.av2-actions{ display:flex; gap:10px; margin-top:20px; }
 .av2-play,.av2-shuf{
   display:inline-flex; align-items:center; gap:8px;
-  padding:11px 22px; border-radius:8px; border:none;
-  font-family:var(--ff-b); font-weight:600; font-size:14px; cursor:pointer;
-  transition:opacity .15s,transform .1s;
+  padding:13px 28px; border-radius:32px; border:none;
+  font-family:var(--ff-b); font-weight:700; font-size:14px; cursor:pointer;
+  transition:opacity .15s,transform .1s,background .15s;
 }
-.av2-play{ background:var(--ac); color:#0E141B; }
-.av2-shuf{ background:var(--b1); color:var(--t1); }
-.av2-play:hover,.av2-shuf:hover{ opacity:.92; }
+.av2-play{ background:var(--t1); color:#0E141B; }
+.av2-play:hover{ background:#fff; }
+.av2-shuf{ background:transparent; color:var(--t1); border:1.5px solid var(--b3); }
+.av2-shuf:hover{ background:rgba(255,255,255,.06); border-color:var(--t2); }
 .av2-play:active,.av2-shuf:active{ transform:translateY(1px); }
 .av2-quality{
   background:var(--panel); border:1px solid var(--b1); border-radius:12px;
@@ -900,13 +911,14 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 }
 .av2-tracks{ margin-top:8px; }
 .av2-trk-hdr{
-  display:grid; grid-template-columns:42px 1fr 70px 88px 60px; gap:14px;
-  padding:8px 14px; margin-bottom:4px;
-  font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
-  color:var(--t4); border-bottom:1px solid var(--b1);
+  display:grid; grid-template-columns:32px 1fr 64px; gap:18px;
+  padding:10px 14px; margin-bottom:6px;
+  font-family:var(--ff-m); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--t4); border-bottom:1px solid var(--b1); font-weight:500;
 }
+.av2-trk-hdr span:nth-child(3){ text-align:right; }
 .av2-trk{
-  display:grid; grid-template-columns:42px 1fr 70px 88px 60px; gap:14px;
+  display:grid; grid-template-columns:32px 1fr 64px; gap:18px;
   padding:11px 14px; align-items:center; border-radius:6px;
   cursor:pointer; transition:background .12s;
 }
@@ -992,11 +1004,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   color:#cdb6f5; border:1px solid rgba(155,109,212,.4);
 }
 
-/* Tablet — collapse rail under main column */
-@media(max-width:1100px){
+/* Tablet & narrow desktop — hide rail entirely so tracks get full width.
+   Rail re-appears on wide screens (>= 1280px) where there's room for both. */
+@media(max-width:1279px){
   .av2{ grid-template-columns:1fr; }
-  .av2-rail{ flex-direction:row; flex-wrap:wrap; }
-  .av2-rail-card{ flex:1; min-width:280px; }
+  .av2-rail{ display:none; }
 }
 
 /* Release information from MusicBrainz */
@@ -1090,29 +1102,24 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       AURALIS
     </div>
     <div class="sb-scroll">
-      <div class="sb-lbl">Apple Music</div>
-      <div class="sb-item on" data-nav="home"     onclick="go('home')"   >Listen Now</div>
-      <div class="sb-item"    data-nav="ai"       onclick="go('ai')"     >Browse</div>
+      <div class="sb-item on" data-nav="home"     onclick="go('home')"   >Home</div>
+      <div class="sb-item"    data-nav="ai"       onclick="go('ai')"     >Explore</div>
 
-      <div class="sb-lbl">Library</div>
+      <div class="sb-lbl">My Collection</div>
       <div class="sb-item"    data-nav="library"  onclick="go('library')">Albums<span class="sb-count" id="libCount">0</span></div>
       <div class="sb-item"    data-nav="artists"  onclick="go('artists')">Artists</div>
-      <div class="sb-item"                        onclick="go('library')">Songs</div>
+      <div class="sb-item"                        onclick="go('library')">Tracks</div>
       <div class="sb-item"                        onclick="go('library')">Genres</div>
-      <div class="sb-item"                        onclick="go('library')">Recently Added</div>
 
-      <div class="sb-lbl">Hi-Res</div>
-      <div class="sb-item" onclick="filterFmt('FLAC')">FLAC Lossless</div>
+      <div class="sb-lbl">Quality</div>
+      <div class="sb-item" onclick="filterFmt('FLAC')">FLAC</div>
       <div class="sb-item" onclick="filterFmt('DSD')">DSD</div>
       <div class="sb-item" onclick="filterFmt('MQA')">MQA</div>
 
-      <div class="sb-lbl">Discovery</div>
-      <div class="sb-item" data-nav="ai"          onclick="go('ai')">AI Recommendations</div>
-
-      <div class="sb-lbl">Tools</div>
-      <div class="sb-item" onclick="toggleMiniPlayer()">Mini Player</div>
-      <div class="sb-item" onclick="openImport()">Import Audio</div>
-      <div class="sb-item" onclick="showConnectModal()">Server Connection</div>
+      <div class="sb-lbl">More</div>
+      <div class="sb-item" onclick="toggleSidePlayer()">Now Playing</div>
+      <div class="sb-item" onclick="openImport()">Import</div>
+      <div class="sb-item" onclick="showConnectModal()">Connection</div>
       <div class="sb-item" data-nav="settings"    onclick="go('settings')">Settings</div>
     </div>
     <div class="sb-footer">
@@ -2470,15 +2477,11 @@ async function openAlbum(id) {
     : alb.tracks.map(function(t, i) {
         var isPlaying = S.current && S.current.title===t.title && S.current.artist===t.artist;
         var altArtist = t.artist && t.artist !== alb.artist ? '<div class="av2-trk-by">'+esc(t.artist)+'</div>' : '';
-        var quality = (t.bit ? t.bit+'/' : '') + fmtKHz(t.sr);
-        var qualityChip = (t.bit || t.sr) ? '<div class="av2-trk-q">'+quality+'</div>' : '<div class="av2-trk-q">—</div>';
         return '<div class="av2-trk'+(isPlaying?' playing':'')+'" onclick="playAlbumAt(\''+id+'\','+i+')">'+
           '<div class="av2-trk-n">'+(isPlaying?'▶':(t.trackNum||i+1))+'</div>'+
           '<div class="av2-trk-tt">'+
             '<div class="av2-trk-ti">'+esc(t.title)+'</div>'+altArtist+
           '</div>'+
-          '<div class="av2-trk-fmt">'+(t.ext||'').toUpperCase()+'</div>'+
-          qualityChip+
           '<div class="av2-trk-dur">'+fmtDur(t.duration)+'</div>'+
         '</div>';
       }).join('');
@@ -2500,15 +2503,20 @@ async function openAlbum(id) {
             '<span>'+alb.tracks.length+' track'+(alb.tracks.length===1?'':'s')+'</span>'+
             (totalSec?'<span>'+runtime+'</span>':'')+
           '</div>'+
+          '<div class="av2-specs">'+
+            '<span class="av2-spec">'+formatSummary+'</span>'+
+            '<span class="av2-spec">'+maxBit+'-bit / '+srLabel+'</span>'+
+            (isHi?'<span class="av2-spec hi">Hi-Res Lossless</span>':'<span class="av2-spec">Lossless</span>')+
+          '</div>'+
           '<div class="av2-actions">'+
-            '<button class="av2-play" onclick="playAlbum(\''+id+'\')">▶ Play album</button>'+
+            '<button class="av2-play" onclick="playAlbum(\''+id+'\')">▶ Play</button>'+
             '<button class="av2-shuf" onclick="playAlbumShuffle(\''+id+'\')">⇄ Shuffle</button>'+
           '</div>'+
         '</div>'+
       '</header>'+
       (alb.description||alb.notes?'<section class="av2-desc">'+esc(alb.description||alb.notes)+'</section>':'')+
       '<section class="av2-tracks">'+
-        '<div class="av2-trk-hdr"><span>#</span><span>Title</span><span>Format</span><span>Quality</span><span>Time</span></div>'+
+        '<div class="av2-trk-hdr"><span>#</span><span>Title</span><span>Time</span></div>'+
         tracksHtml+
       '</section>'+
       '<div class="alb-ai-panel"><div class="alb-ai-title">✦ AI Insight</div><div id="albAIInsight"><div class="ai-loading"><div class="ai-spinner"></div>Generating insight…</div></div></div>'+
