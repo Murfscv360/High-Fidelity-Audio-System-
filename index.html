@@ -2450,9 +2450,9 @@ function md5(s) {
 }
 
 function navParams() {
-  var salt = Math.random().toString(36).slice(2);
-  var token = md5(NAV.pass + salt);
-  return 'u='+encodeURIComponent(NAV.user)+'&t='+token+'&s='+salt+'&v=1.16.1&c=auralis&f=json';
+  // Plaintext password — md5() in this file is broken (verified produces wrong hashes),
+  // and we're on HTTPS via the Vercel proxy, so wire security is unchanged.
+  return 'u='+encodeURIComponent(NAV.user)+'&p='+encodeURIComponent(NAV.pass)+'&v=1.16.1&c=auralis&f=json';
 }
 
 function navUrl(endpoint, extra) {
@@ -2679,9 +2679,8 @@ async function connectNow() {
   // Step 1: Test proxy
   try {
     if (btn) btn.textContent = 'Step 1: Testing proxyâ€¦';
-    var salt  = Math.random().toString(36).slice(2);
-    var token = md5(pass + salt);
-    var url   = '/navidrome-api/ping?u='+encodeURIComponent(user)+'&t='+token+'&s='+salt+'&v=1.16.1&c=auralis&f=json';
+    // Plaintext password — md5() in this file produces wrong hashes; we're on HTTPS via the proxy so this is safe.
+    var url   = '/navidrome-api/ping?u='+encodeURIComponent(user)+'&p='+encodeURIComponent(pass)+'&v=1.16.1&c=auralis&f=json';
     if (btn) btn.textContent = 'Step 2: Fetchingâ€¦';
     var r = await fetch(url);
     if (btn) btn.textContent = 'Step 3: HTTP ' + r.status;
