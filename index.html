@@ -816,13 +816,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 }
 .av2-tracks{ margin-top:8px; }
 .av2-trk-hdr{
-  display:grid; grid-template-columns:42px 1fr 80px 60px; gap:14px;
+  display:grid; grid-template-columns:42px 1fr 70px 88px 60px; gap:14px;
   padding:8px 14px; margin-bottom:4px;
   font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
   color:var(--t4); border-bottom:1px solid var(--b1);
 }
 .av2-trk{
-  display:grid; grid-template-columns:42px 1fr 80px 60px; gap:14px;
+  display:grid; grid-template-columns:42px 1fr 70px 88px 60px; gap:14px;
   padding:11px 14px; align-items:center; border-radius:6px;
   cursor:pointer; transition:background .12s;
 }
@@ -851,6 +851,33 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   padding:32px; text-align:center; color:var(--t3);
   font-family:var(--ff-m); font-size:12px; letter-spacing:.08em;
 }
+
+/* Release information from MusicBrainz */
+.av2-mb{
+  margin:24px 0 28px; padding:18px 22px;
+  background:var(--b0); border:1px solid var(--b1); border-radius:10px;
+}
+.av2-mb-h{
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--t3); margin-bottom:14px; font-weight:500;
+}
+.av2-mb-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px 22px;
+}
+.av2-mb-row{
+  display:flex; justify-content:space-between; align-items:baseline; gap:12px;
+  font-family:var(--ff-b); font-size:13px; color:var(--t2);
+}
+.av2-mb-row strong{
+  font-family:var(--ff-m); font-weight:500; font-size:12.5px; color:var(--t1);
+  letter-spacing:.02em; text-align:right;
+}
+.av2-mb-link{
+  display:inline-block; margin-top:14px;
+  font-family:var(--ff-m); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--ac); text-decoration:none; opacity:.8; transition:opacity .12s;
+}
+.av2-mb-link:hover{ opacity:1; }
 
 /* Tablet — collapse the right quality panel under metadata */
 @media(max-width:1080px){
@@ -1104,6 +1131,148 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   </div>
   <button class="mob-np-btn" id="mobPlay" onclick="event.stopPropagation();togglePlay()">▶</button>
 </div>
+<!-- SIDE PLAYER — right-docked panel; toggled by clicking the album art in the main player bar -->
+<aside id="side-player">
+  <button class="sp-close" onclick="toggleSidePlayer()" title="Hide">›</button>
+  <div class="sp-art" id="spArt">🎵</div>
+  <div class="sp-meta">
+    <div class="sp-title" id="spTitle">No track playing</div>
+    <div class="sp-artist" id="spArtist">Press play to begin</div>
+    <div class="sp-album" id="spAlbum"></div>
+  </div>
+  <div class="sp-tags" id="spTags"></div>
+  <div class="sp-prog">
+    <div class="sp-bar" id="spBar" onclick="seekClick(event)"><div class="sp-fill" id="spFill"></div></div>
+    <div class="sp-times"><span id="spCur">0:00</span><span id="spDur">0:00</span></div>
+  </div>
+  <div class="sp-ctrls">
+    <button class="sp-btn"  onclick="toggleShuffle()" title="Shuffle">⇄</button>
+    <button class="sp-btn"  onclick="skipPrev()" title="Previous">⏮</button>
+    <button class="sp-play" id="spPlay" onclick="togglePlay()">▶</button>
+    <button class="sp-btn"  onclick="skipNext()" title="Next">⏭</button>
+    <button class="sp-btn"  onclick="toggleRepeat()" title="Repeat">↻</button>
+  </div>
+  <div class="sp-foot">
+    <button class="sp-link" onclick="openFs();toggleSidePlayer()">Fullscreen</button>
+    <button class="sp-link" onclick="toggleMiniPlayer();toggleSidePlayer()">Mini player</button>
+  </div>
+</aside>
+<style>
+#side-player{
+  position:fixed; top:0; bottom:0; right:0; z-index:850;
+  width:360px; max-width:90vw; padding:64px 22px 28px;
+  background:rgba(11,17,24,.92);
+  backdrop-filter:blur(28px) saturate(160%); -webkit-backdrop-filter:blur(28px) saturate(160%);
+  border-left:1px solid var(--b1);
+  box-shadow:-20px 0 60px rgba(0,0,0,.5);
+  display:flex; flex-direction:column; gap:18px;
+  transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+}
+#side-player.show{ transform:translateX(0); }
+.sp-close{
+  position:absolute; top:14px; right:14px;
+  width:36px; height:36px; border-radius:50%;
+  background:var(--b0); border:1px solid var(--b1); color:var(--t2);
+  font-size:22px; line-height:1; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .12s,color .12s;
+}
+.sp-close:hover{ background:var(--b1); color:var(--t1); }
+.sp-art{
+  width:100%; aspect-ratio:1; border-radius:10px; overflow:hidden;
+  background:var(--raised); flex-shrink:0;
+  display:flex; align-items:center; justify-content:center; font-size:56px;
+  box-shadow:0 16px 40px rgba(0,0,0,.55),0 4px 12px rgba(0,0,0,.3);
+}
+.sp-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.sp-meta{ display:flex; flex-direction:column; gap:3px; }
+.sp-title{
+  font-family:var(--ff-b); font-weight:700; font-size:18px; color:var(--t1);
+  letter-spacing:-0.01em; line-height:1.25;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.sp-artist{
+  font-family:var(--ff-b); font-weight:500; font-size:13.5px; color:var(--t2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.sp-album{
+  font-family:var(--ff-m); font-size:11px; color:var(--t3); letter-spacing:.04em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.sp-tags{
+  display:flex; flex-wrap:wrap; gap:6px;
+}
+.sp-tag{
+  display:inline-flex; align-items:center;
+  padding:4px 8px; border-radius:5px;
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.1em; font-weight:600;
+  background:rgba(212,168,75,.14); color:var(--gold);
+  border:1px solid rgba(212,168,75,.3); text-transform:uppercase;
+}
+.sp-tag.std{ background:rgba(77,184,255,.12); color:var(--ac); border-color:rgba(77,184,255,.28); }
+.sp-prog{ display:flex; flex-direction:column; gap:6px; }
+.sp-bar{
+  height:4px; background:var(--b1); border-radius:2px; overflow:hidden; cursor:pointer;
+}
+.sp-fill{ height:100%; background:var(--ac); width:0%; transition:width .12s linear; }
+.sp-times{
+  display:flex; justify-content:space-between;
+  font-family:var(--ff-m); font-size:11px; color:var(--t3); letter-spacing:.02em;
+}
+.sp-ctrls{
+  display:flex; align-items:center; justify-content:center; gap:10px; margin-top:4px;
+}
+.sp-btn{
+  width:38px; height:38px; border-radius:50%;
+  background:transparent; color:var(--t2); font-size:14px;
+  display:flex; align-items:center; justify-content:center;
+  transition:background .12s,color .12s;
+}
+.sp-btn:hover{ color:var(--t1); background:var(--b1); }
+.sp-play{
+  width:54px; height:54px; border-radius:50%;
+  background:var(--ac); color:#0E141B; font-size:18px; padding-left:3px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 6px 16px rgba(77,184,255,.4);
+  transition:transform .15s,opacity .15s;
+}
+.sp-play:hover{ opacity:.92; }
+.sp-play:active{ transform:scale(.96); }
+.sp-foot{
+  margin-top:auto; padding-top:14px; border-top:1px solid var(--b1);
+  display:flex; gap:12px; justify-content:center;
+}
+.sp-link{
+  background:transparent; color:var(--t3);
+  font-family:var(--ff-m); font-size:10.5px; letter-spacing:.14em; text-transform:uppercase;
+  padding:6px 4px; cursor:pointer; transition:color .12s;
+}
+.sp-link:hover{ color:var(--ac); }
+
+/* Make album-art in main player bar clearly clickable */
+.pb-art{ cursor:pointer; transition:transform .15s; }
+.pb-art:hover{ transform:scale(1.03); }
+.pb-art::after{
+  content:""; position:absolute; inset:0; border-radius:inherit;
+  box-shadow:inset 0 0 0 2px rgba(77,184,255,0);
+  transition:box-shadow .15s; pointer-events:none;
+}
+.pb-art:hover::after{ box-shadow:inset 0 0 0 2px rgba(77,184,255,.4); }
+
+/* On phone the right-docked panel becomes a bottom sheet */
+@media(max-width:768px){
+  #side-player{
+    top:auto; right:0; left:0; bottom:0; width:100%; max-width:100%;
+    height:78vh; padding:48px 18px 22px;
+    border-left:none; border-top:1px solid var(--b1);
+    border-radius:18px 18px 0 0;
+    transform:translateY(100%);
+  }
+  #side-player.show{ transform:translateY(0); }
+  .sp-close{ transform:rotate(90deg); top:10px; right:50%; margin-right:-18px; }
+}
+</style>
+
 <!-- MINI PLAYER — compact floating widget; toggled from main player or keyboard 'M' -->
 <div id="mini-player" class="mp-hidden">
   <button class="mp-close" onclick="toggleMiniPlayer()" title="Close">✕</button>
@@ -2119,20 +2288,27 @@ async function openAlbum(id) {
 
   var art = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<span style="font-size:64px">🎵</span>';
 
-  // Track rows — clean, no fluff. # · title · duration. Different artist shown only when not the album artist.
+  // Track rows — # · title (+ guest artist) · format chip · quality chip · duration.
   function fmtDur(s){ if(!s||isNaN(s))return '—'; var m=Math.floor(s/60),x=Math.floor(s%60); return m+':'+(x<10?'0':'')+x; }
+  function fmtKHz(sr){ if(!sr)return '—'; return ((sr/1000).toFixed(sr%1000?1:0))+'k'; }
   var tracksHtml = alb.tracks.length === 0
-    ? '<div class="av2-empty">Track list unavailable</div>'
+    ? '<div class="av2-empty">'+
+      '<div style="font-family:var(--ff-b);font-weight:600;font-size:14px;color:var(--t1);margin-bottom:8px">No tracks loaded</div>'+
+      '<div style="font-size:12px;color:var(--t3);margin-bottom:14px">Either the album has no tracks, or the server didn\'t respond.</div>'+
+      '<button class="av2-shuf" onclick="playAlbum(\''+id+'\')" style="margin:0">↻ Retry load</button>'+
+    '</div>'
     : alb.tracks.map(function(t, i) {
         var isPlaying = S.current && S.current.title===t.title && S.current.artist===t.artist;
-        var qIdx = S.queue.findIndex(function(q){return q.url===t.url;});
         var altArtist = t.artist && t.artist !== alb.artist ? '<div class="av2-trk-by">'+esc(t.artist)+'</div>' : '';
-        return '<div class="av2-trk'+(isPlaying?' playing':'')+'" onclick="playEntry('+qIdx+')">'+
+        var quality = (t.bit ? t.bit+'/' : '') + fmtKHz(t.sr);
+        var qualityChip = (t.bit || t.sr) ? '<div class="av2-trk-q">'+quality+'</div>' : '<div class="av2-trk-q">—</div>';
+        return '<div class="av2-trk'+(isPlaying?' playing':'')+'" onclick="playAlbumAt(\''+id+'\','+i+')">'+
           '<div class="av2-trk-n">'+(isPlaying?'▶':(t.trackNum||i+1))+'</div>'+
           '<div class="av2-trk-tt">'+
             '<div class="av2-trk-ti">'+esc(t.title)+'</div>'+altArtist+
           '</div>'+
           '<div class="av2-trk-fmt">'+(t.ext||'').toUpperCase()+'</div>'+
+          qualityChip+
           '<div class="av2-trk-dur">'+fmtDur(t.duration)+'</div>'+
         '</div>';
       }).join('');
@@ -2161,7 +2337,7 @@ async function openAlbum(id) {
       '</header>'+
       (alb.description||alb.notes?'<section class="av2-desc">'+esc(alb.description||alb.notes)+'</section>':'')+
       '<section class="av2-tracks">'+
-        '<div class="av2-trk-hdr"><span>#</span><span>Title</span><span>Format</span><span>Time</span></div>'+
+        '<div class="av2-trk-hdr"><span>#</span><span>Title</span><span>Format</span><span>Quality</span><span>Time</span></div>'+
         tracksHtml+
       '</section>'+
     '</div>'+
@@ -2169,6 +2345,135 @@ async function openAlbum(id) {
 
   setTimeout(function(){ loadAlbumAIInsight(alb); }, 100);
   setSidebarQuality({ format:formatSummary, bit:maxBit, sr:maxSr, hi:isHi });
+
+  // Async — MusicBrainz enrichment (label, release date, country, catalog #, type).
+  fetchMusicBrainz(alb).then(function(info){
+    if (!info) return;
+    var mbHtml = renderMbPanel(info);
+    if (!mbHtml) return;
+    // Inject between description and tracks.
+    var tracksSection = document.querySelector('#album-view .av2-tracks');
+    if (tracksSection) tracksSection.insertAdjacentHTML('beforebegin', mbHtml);
+    // If Navidrome didn't give us cover art, fall back to MusicBrainz cover art archive.
+    if (!alb.art && info.coverArt) {
+      var heroArt = document.querySelector('#album-view .av2-art');
+      if (heroArt) heroArt.innerHTML = '<img src="'+info.coverArt+'" alt="'+esc(alb.title)+'" onerror="this.parentNode.innerHTML=\'🎵\'">';
+    }
+  });
+}
+
+// Side-player (right-docked panel) toggle.
+function toggleSidePlayer(){
+  var sp = document.getElementById('side-player');
+  if (!sp) return;
+  sp.classList.toggle('show');
+  if (sp.classList.contains('show')) syncSidePlayer();
+}
+function syncSidePlayer(){
+  var t = S.current;
+  var sp = document.getElementById('side-player');
+  if (!sp || !sp.classList.contains('show')) return;
+  var $ = function(id){ return document.getElementById(id); };
+  $('spTitle').textContent  = t && t.title  ? t.title  : 'No track playing';
+  $('spArtist').textContent = t && t.artist ? t.artist : 'Press play to begin';
+  $('spAlbum').textContent  = t && t.album  ? t.album  : '';
+  var artEl = $('spArt');
+  if (artEl) {
+    if (t && t.art) artEl.innerHTML = '<img src="'+t.art+'" alt="">';
+    else artEl.innerHTML = '🎵';
+  }
+  var tags = $('spTags');
+  if (tags) {
+    var html = '';
+    if (t && t.ext) html += '<span class="sp-tag std">'+t.ext.toUpperCase()+'</span>';
+    if (t && t.bit) html += '<span class="sp-tag">'+t.bit+'-BIT</span>';
+    if (t && t.sr)  html += '<span class="sp-tag">'+((t.sr/1000).toFixed(t.sr%1000?1:0))+' KHZ</span>';
+    if (t && (t.bit>=24 || t.sr>=48000)) html += '<span class="sp-tag">HI-RES</span>';
+    tags.innerHTML = html;
+  }
+  var play = $('spPlay'); if (play) play.textContent = S.playing ? '⏸' : '▶';
+  if (window.AUD && AUD.duration) {
+    var pct = (AUD.currentTime / AUD.duration) * 100;
+    $('spFill').style.width = pct + '%';
+    var fmt = function(s){ s=Math.max(0,Math.floor(s||0)); var m=Math.floor(s/60),x=s%60; return m+':'+(x<10?'0':'')+x; };
+    $('spCur').textContent = fmt(AUD.currentTime);
+    $('spDur').textContent = fmt(AUD.duration);
+  }
+}
+// Bind pb-art click to open the side-player.
+document.addEventListener('DOMContentLoaded', function(){
+  var pbArt = document.getElementById('pbArt');
+  if (pbArt) pbArt.addEventListener('click', toggleSidePlayer);
+  // Sync side-player on every timeupdate / play / pause.
+  if (window.AUD) {
+    AUD.addEventListener('timeupdate', syncSidePlayer);
+    AUD.addEventListener('play',  syncSidePlayer);
+    AUD.addEventListener('pause', syncSidePlayer);
+  }
+});
+
+// MusicBrainz album enrichment. Anonymous, rate-limit-friendly (1 req/sec).
+var MB_CACHE = {};
+async function fetchMusicBrainz(alb){
+  if (!alb || !alb.title || !alb.artist) return null;
+  var key = (alb.title + '|' + alb.artist).toLowerCase();
+  if (MB_CACHE[key]) return MB_CACHE[key];
+  try {
+    // Try IDB cache first (persist across sessions).
+    try {
+      await dbOpen();
+      var cached = await dbGetAll('meta');
+      var hit = (cached || []).find(function(m){ return m.key === 'mb:'+key; });
+      if (hit && hit.data) { MB_CACHE[key] = hit.data; return hit.data; }
+    } catch(_) {}
+    var q = 'release:"'+alb.title.replace(/"/g,'')+'" AND artist:"'+alb.artist.replace(/"/g,'')+'"';
+    var url = 'https://musicbrainz.org/ws/2/release/?query='+encodeURIComponent(q)+'&fmt=json&limit=3';
+    var r = await fetch(url, { headers: { 'Accept': 'application/json' }});
+    if (!r.ok) return null;
+    var j = await r.json();
+    if (!j.releases || !j.releases.length) return null;
+    var rel = j.releases[0];
+    var info = {
+      mbid:        rel.id,
+      title:       rel.title,
+      country:     rel.country || '',
+      date:        rel.date || '',
+      status:      rel.status || '',
+      label:       (rel['label-info']||[])[0]?.label?.name || '',
+      catalogNo:   (rel['label-info']||[])[0]?.['catalog-number'] || '',
+      barcode:     rel.barcode || '',
+      format:      (rel.media||[])[0]?.format || '',
+      trackCount:  (rel.media||[])[0]?.['track-count'] || 0,
+      packaging:   rel.packaging || '',
+      releaseGroupId: rel['release-group']?.id || '',
+      primaryType: rel['release-group']?.['primary-type'] || '',
+      secondaryTypes: rel['release-group']?.['secondary-types'] || [],
+      coverArt:    'https://coverartarchive.org/release/'+rel.id+'/front-500',
+    };
+    MB_CACHE[key] = info;
+    try { await dbPut('meta', { key: 'mb:'+key, data: info, savedAt: Date.now() }); } catch(_) {}
+    return info;
+  } catch(e) { console.warn('[MusicBrainz]', e); return null; }
+}
+function renderMbPanel(info){
+  if (!info) return '';
+  var rows = [];
+  if (info.date)       rows.push(['Released',  info.date]);
+  if (info.country)    rows.push(['Country',   info.country]);
+  if (info.label)      rows.push(['Label',     info.label]);
+  if (info.catalogNo)  rows.push(['Catalog #', info.catalogNo]);
+  if (info.format)     rows.push(['Format',    info.format]);
+  if (info.primaryType)rows.push(['Type',      info.primaryType + (info.secondaryTypes && info.secondaryTypes.length ? ' · ' + info.secondaryTypes.join(', ') : '')]);
+  if (info.barcode)    rows.push(['Barcode',   info.barcode]);
+  if (info.packaging)  rows.push(['Packaging', info.packaging]);
+  if (rows.length === 0) return '';
+  return '<section class="av2-mb">' +
+    '<div class="av2-mb-h">Release Information</div>' +
+    '<div class="av2-mb-grid">' +
+    rows.map(function(r){ return '<div class="av2-mb-row"><span>'+r[0]+'</span><strong>'+esc(r[1])+'</strong></div>'; }).join('') +
+    '</div>' +
+    '<a class="av2-mb-link" href="https://musicbrainz.org/release/'+info.mbid+'" target="_blank" rel="noopener">View on MusicBrainz ↗</a>' +
+  '</section>';
 }
 
 // Mini-player toggle. Bound to a sidebar item and keyboard 'M'.
@@ -2241,6 +2546,16 @@ function playAlbumShuffle(id) {
   S.shuffle=true;
   document.getElementById('shuffleBtn').classList.add('on');
   playAlbum(id);
+}
+
+// Play a specific track within an album. Wired from av2-trk row clicks.
+function playAlbumAt(id, trkIdx) {
+  var alb = S.albums[id];
+  if (!alb || !alb.tracks || !alb.tracks[trkIdx]) return;
+  // Build / replace the queue with all album tracks, then start at trkIdx.
+  S.queue = alb.tracks.slice();
+  S.currentAlbumId = id;
+  playEntry(trkIdx);
 }
 
 // ── SEARCH ─────────────────────────────────────────────
