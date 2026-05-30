@@ -686,6 +686,89 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .ml-foot{ font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; color:var(--t4); text-transform:uppercase; }
 @media(min-width:769px){ #mob-launch{ display:none!important; } }
 
+/* ══════════════════════════════════════════════════════════
+   MOBILE CURATED HOME — Apple Music "Listen Now" style
+   ══════════════════════════════════════════════════════════ */
+.mch{ padding:14px 14px 110px; display:flex; flex-direction:column; gap:26px; }
+.mch-hero{
+  display:flex; flex-direction:column; align-items:center; text-align:center;
+  padding:18px 4px 6px;
+}
+.mch-hero-art{
+  width:200px; height:200px; border-radius:12px; overflow:hidden;
+  background:var(--raised);
+  box-shadow:0 16px 40px rgba(0,0,0,.55),0 4px 12px rgba(0,0,0,.4);
+  display:flex; align-items:center; justify-content:center; margin-bottom:18px;
+  cursor:pointer; transition:transform .15s;
+}
+.mch-hero-art:active{ transform:scale(.97); }
+.mch-hero-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.mch-hero-eyebrow{
+  font-family:var(--ff-m); font-size:10.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ac); margin-bottom:8px;
+}
+.mch-hero-ti{
+  font-family:var(--ff-b); font-weight:700; font-size:22px; color:var(--t1);
+  letter-spacing:-0.01em; margin-bottom:2px; line-height:1.2;
+  max-width:340px;
+}
+.mch-hero-ar{
+  font-family:var(--ff-b); font-size:14px; color:var(--t2); margin-bottom:14px;
+}
+.mch-hero-actions{ display:flex; flex-direction:column; gap:8px; width:100%; max-width:300px; align-items:stretch; }
+.mch-cta{
+  padding:12px 18px; border-radius:8px;
+  background:var(--ac); color:#0E141B; border:none;
+  font-family:var(--ff-b); font-weight:700; font-size:14.5px; letter-spacing:.01em;
+  cursor:pointer; box-shadow:0 6px 16px rgba(77,184,255,.3);
+}
+.mch-cta2{
+  padding:12px 18px; border-radius:8px;
+  background:var(--b1); color:var(--t1); border:1px solid var(--b2);
+  font-family:var(--ff-b); font-weight:600; font-size:13.5px; letter-spacing:.01em;
+  cursor:pointer;
+}
+.mch-cta:active,.mch-cta2:active{ transform:translateY(1px); }
+
+.mch-shelf{ display:flex; flex-direction:column; gap:12px; }
+.mch-shelf-h{ display:flex; align-items:center; gap:8px; padding:0 2px; }
+.mch-shelf-h h2{
+  font-family:var(--ff-b); font-weight:700; font-size:18px; letter-spacing:-0.01em;
+  color:var(--t1); margin:0;
+}
+.mch-badge{
+  display:inline-block; padding:2px 7px; border-radius:10px;
+  font-family:var(--ff-m); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+  background:linear-gradient(135deg,rgba(155,109,212,.22),rgba(77,184,255,.18));
+  color:#cdb6f5; border:1px solid rgba(155,109,212,.4); font-weight:600;
+}
+.mch-row{
+  display:flex; gap:12px; overflow-x:auto; padding:2px 2px 6px;
+  scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.mch-row::-webkit-scrollbar{ display:none; }
+.mch-card{
+  flex:0 0 144px; scroll-snap-align:start;
+  cursor:pointer; display:flex; flex-direction:column; gap:6px;
+}
+.mch-card-art{
+  width:144px; height:144px; border-radius:8px; overflow:hidden;
+  background:var(--raised);
+  box-shadow:0 8px 22px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3);
+  display:flex; align-items:center; justify-content:center; font-size:34px;
+}
+.mch-card-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.mch-card-ti{
+  font-family:var(--ff-b); font-weight:600; font-size:13px; color:var(--t1);
+  letter-spacing:-0.005em; line-height:1.25;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:144px;
+}
+.mch-card-ar{
+  font-family:var(--ff-b); font-size:12px; color:var(--t3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:144px;
+}
+
 /* Sidebar — drop leading icons entirely (Apple/Tidal style is text-only) */
 #sidebar .sb-item .sb-icon{ display:none!important; }
 #sidebar .sb-item{ padding-left:26px; }
@@ -1178,15 +1261,32 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   </div>
 </div>
 
-<!-- MOBILE -->
+<!-- MOBILE — primary nav (4 tabs, Apple Music style) -->
 <nav id="mob-nav">
   <button class="mob-btn on" data-nav="home"    onclick="go('home')"   ><span class="mob-icon">⌂</span>Home</button>
-  <button class="mob-btn"    data-nav="library" onclick="go('library')"><span class="mob-icon">⊞</span>Library</button>
-  <button class="mob-btn"    data-nav="ai"      onclick="go('ai')"   ><span class="mob-icon">✦</span>AI</button>
-  <button class="mob-btn"                       onclick="openImport()" ><span class="mob-icon">⊕</span>Import</button>
+  <button class="mob-btn"    data-nav="library" onclick="go('library')"><span class="mob-icon">▦</span>Albums</button>
   <button class="mob-btn"    data-nav="artists" onclick="go('artists')"><span class="mob-icon">♪</span>Artists</button>
-  <button class="mob-btn"    data-nav="settings"onclick="go('settings')"><span class="mob-icon">⚙</span>Settings</button>
+  <button class="mob-btn"                       onclick="toggleSidePlayer()"><span class="mob-icon">♬</span>Player</button>
 </nav>
+
+<!-- MOBILE — floating play/pause FAB above bottom nav -->
+<button id="fab-play" onclick="togglePlay()" title="Play / Pause"><span id="fabIcon">▶</span></button>
+<style>
+#fab-play{ display:none; }
+@media(max-width:768px){
+  #fab-play{
+    display:flex; align-items:center; justify-content:center;
+    position:fixed; right:18px; bottom:74px; z-index:920;
+    width:60px; height:60px; border-radius:50%;
+    background:var(--ac); color:#0E141B; font-size:22px; padding-left:3px;
+    border:none; cursor:pointer;
+    box-shadow:0 10px 28px rgba(77,184,255,.4),0 4px 10px rgba(0,0,0,.4);
+    transition:transform .15s,opacity .15s;
+  }
+  #fab-play:active{ transform:scale(.94); }
+  #fab-play.hidden{ opacity:0; pointer-events:none; transform:translateY(8px); }
+}
+</style>
 <div id="mob-np" class="hidden" onclick="openFs()">
   <img class="mob-np-art" id="mobArt" src="" alt="">
   <div class="mob-np-info">
@@ -2186,6 +2286,12 @@ function renderHome(p) {
     return;
   }
 
+  // Mobile curated home — fully on-device learning, no API calls.
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    p.innerHTML = renderMobileCuratedHome(albs);
+    return;
+  }
+
   // Hero: currently playing or first album
   var heroAlb = (S.current && S.albums[S.current.albumId]) ? S.albums[S.current.albumId] : albs[0];
   var heroBg  = heroAlb.art ? 'url('+heroAlb.art+')' : '';
@@ -2429,6 +2535,71 @@ async function openAlbum(id) {
   });
 }
 
+// ════════════════════════════════════════════════════════
+// MOBILE CURATED HOME — on-device, no API calls.
+// Uses listening history (trackPlay / trackComplete / trackLove) to score albums.
+// ════════════════════════════════════════════════════════
+function renderMobileCuratedHome(albs){
+  var heroAlb = (S.current && S.albums[S.current.albumId]) ? S.albums[S.current.albumId] : albs[0];
+
+  // 1) Made for You — score every album with curateForAlbum (seed = current or first hi-res)
+  var seedAlb = heroAlb || albs.find(function(a){ return a.isHi; }) || albs[0];
+  var madeForYou = curateForAlbum(seedAlb).slice(0, 10);
+
+  // 2) Recently Added — by addedAt or fallback to id order
+  var recent = albs.slice().sort(function(a,b){
+    return (b.addedAt || 0) - (a.addedAt || 0);
+  }).slice(0, 10);
+
+  // 3) Hi-Res Highlights — hi-res only, ranked by listening score boost
+  var topArtists = typeof getTopArtists === 'function' ? getTopArtists() : {};
+  var hires = albs.filter(function(a){ return a.isHi; }).map(function(a){
+    return { alb:a, score:(topArtists[a.artist]||0) * 4 + Math.random() };
+  }).sort(function(a,b){ return b.score - a.score; }).slice(0, 10).map(function(x){ return x.alb; });
+
+  // 4) Recently Played — distinct albums from queue history
+  var heard = {};
+  (S.queue||[]).forEach(function(t){ if (t.albumId) heard[t.albumId] = (heard[t.albumId]||0) + 1; });
+  var recentlyPlayed = Object.keys(heard).map(function(id){ return S.albums[id]; }).filter(Boolean).slice(0, 10);
+
+  function shelf(title, list, badge){
+    if (!list || !list.length) return '';
+    return '<section class="mch-shelf">' +
+      '<div class="mch-shelf-h"><h2>'+title+'</h2>'+(badge?'<span class="mch-badge">'+badge+'</span>':'')+'</div>'+
+      '<div class="mch-row">' +
+        list.map(function(a){
+          var img = a.art ? '<img src="'+a.art+'" alt="'+esc(a.title)+'">' : '<span>🎵</span>';
+          return '<div class="mch-card" onclick="openAlbum(\''+a.id+'\')">'+
+            '<div class="mch-card-art">'+img+'</div>'+
+            '<div class="mch-card-ti">'+esc(a.title)+'</div>'+
+            '<div class="mch-card-ar">'+esc(a.artist||'')+'</div>'+
+          '</div>';
+        }).join('') +
+      '</div>'+
+    '</section>';
+  }
+
+  // Hero section
+  var hImg = heroAlb && heroAlb.art ? '<img src="'+heroAlb.art+'" alt="">' : '<span style="font-size:48px">🎵</span>';
+  var hero = '<div class="mch-hero">'+
+    '<div class="mch-hero-art" onclick="openAlbum(\''+heroAlb.id+'\')">'+hImg+'</div>'+
+    '<div class="mch-hero-eyebrow">'+(S.current?'Now Playing':'Featured Album')+'</div>'+
+    '<div class="mch-hero-ti">'+esc(heroAlb.title)+'</div>'+
+    '<div class="mch-hero-ar">'+esc(heroAlb.artist||'')+'</div>'+
+    '<div class="mch-hero-actions">'+
+      '<button class="mch-cta" onclick="playAlbum(\''+heroAlb.id+'\')">▶ Play</button>'+
+      '<button class="mch-cta2" onclick="autoPlaylistFromAlbum(\''+heroAlb.id+'\')">✦ Curate playlist</button>'+
+    '</div>'+
+  '</div>';
+
+  return '<div class="mch">'+ hero +
+    shelf('Recently Played', recentlyPlayed) +
+    shelf('Made for You', madeForYou, 'AI') +
+    shelf('Recently Added', recent) +
+    shelf('Hi-Res Lossless', hires, 'HI-RES') +
+  '</div>';
+}
+
 // Render the right rail for the album view.
 // Three stacked cards: Now Playing (current + queue), Up Next (album tracks after current), Curated for You.
 function renderAlbumRail(alb){
@@ -2595,15 +2766,18 @@ function syncSidePlayer(){
     $('spDur').textContent = fmt(AUD.duration);
   }
 }
-// Bind pb-art click to open the side-player.
+// Bind pb-art click to open the side-player. Also keep FAB icon in sync.
+function syncFab(){
+  var i = document.getElementById('fabIcon');
+  if (i) i.textContent = S.playing ? '⏸' : '▶';
+}
 document.addEventListener('DOMContentLoaded', function(){
   var pbArt = document.getElementById('pbArt');
   if (pbArt) pbArt.addEventListener('click', toggleSidePlayer);
-  // Sync side-player on every timeupdate / play / pause.
   if (window.AUD) {
     AUD.addEventListener('timeupdate', syncSidePlayer);
-    AUD.addEventListener('play',  syncSidePlayer);
-    AUD.addEventListener('pause', syncSidePlayer);
+    AUD.addEventListener('play',  function(){ syncSidePlayer(); syncFab(); });
+    AUD.addEventListener('pause', function(){ syncSidePlayer(); syncFab(); });
   }
 });
 
