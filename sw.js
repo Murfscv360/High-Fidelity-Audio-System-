@@ -1,12 +1,20 @@
 // ═══════════════════════════════════════════════════
-// AURALIS Service Worker v3.1
-// Domain: highresaudio.flynns-arcade.net
-// Strategy: network-first with silent fallback
-// No app-bound domain restrictions
+// AURALIS Service Worker v3.3
+// Strategy: network-first for HTML; cache-first for assets;
+// streaming/audio requests bypass cache entirely (audit MEDIUM-6).
 // ═══════════════════════════════════════════════════
 
-const CACHE   = 'auralis-v3.2';
+const CACHE   = 'auralis-v3.3';
 const SHELL   = ['/manifest.json'];
+
+// Paths that must NEVER be cached (audio streams, API responses that change).
+const NEVER_CACHE = [
+  '/navidrome-api/rest/stream',
+  '/navidrome-api/rest/getAlbumList',
+  '/navidrome-api/rest/getAlbum',
+  '/navidrome-api/rest/getCoverArt',
+  '/navidrome-api/rest/ping',
+];
 
 // ── INSTALL ───────────────────────────────────────
 self.addEventListener('install', e => {
@@ -41,6 +49,10 @@ self.addEventListener('fetch', e => {
 
   // Skip blob: URLs (local audio files)
   if (url.protocol === 'blob:') return;
+
+  // Skip never-cache paths (audit finding MEDIUM-6: SW was caching /navidrome-api/stream
+  // responses indefinitely, so subsequent plays served stale audio and library never refreshed).
+  if (NEVER_CACHE.some(p => url.pathname.startsWith(p))) return;
 
   // HTML navigations: network-first (so deploys are visible immediately, no stale-cache trap).
   // Other assets: cache-first.
