@@ -165,6 +165,12 @@ code/
 | Test rig | ✅ 14 suites, ~400 assertions, pre-deploy + post-deploy gates |
 | Multi-agent audit | ✅ done 2026-05-30 — 4 parallel reviews, every HIGH finding either fixed or documented in FINDINGS.md |
 
+## Related projects
+
+Auralis is part of a small family of self-hosted media players built on the same Navidrome / Subsonic foundation:
+
+- **[Warhammer 40k Player & Management](https://github.com/Murfscv360/Warhammer-40k-Player-and-Management-)** — a sister player focused on the Warhammer 40k audio & audiobook experience, sharing the same hi-res streaming approach.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
