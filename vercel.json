@@ -1,12 +1,12 @@
 {
+  "redirects": [
+    { "source": "/", "destination": "/landing.html", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/navidrome-api/:path*", "destination": "https://programmes-financing-brokers-continuity.trycloudflare.com/rest/:path*" },
-    { "source": "/", "destination": "/landing.html" },
     { "source": "/app", "destination": "/index.html" },
     { "source": "/app/", "destination": "/index.html" },
-    { "source": "/app/:path*", "destination": "/index.html" },
-    { "source": "/(.*\\.png|.*\\.jpg|.*\\.svg|.*\\.json|.*\\.js)", "destination": "/$1" },
-    { "source": "/(.*)", "destination": "/landing.html" }
+    { "source": "/app/:path*", "destination": "/index.html" }
   ],
   "headers": [
     {
