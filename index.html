@@ -500,9 +500,399 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   }
 }
 
+/* ══════════════════════════════════════════════════════════
+   SPLASH / LOADING SCREEN — branded hi-res audio moment
+   ══════════════════════════════════════════════════════════ */
+#splash{
+  position:fixed; inset:0; z-index:99999;
+  background:radial-gradient(ellipse at center,#11181F 0%,#0E141B 60%,#06090D 100%);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:32px; padding:24px;
+  opacity:1; transition:opacity .55s ease-out;
+}
+#splash.gone{ opacity:0; pointer-events:none; }
+.splash-wave{ display:flex; align-items:flex-end; gap:6px; height:64px; }
+.splash-wave span{
+  display:block; width:6px;
+  background:linear-gradient(180deg,var(--ac) 0%,#7ed0ff 100%);
+  border-radius:3px; box-shadow:0 0 16px rgba(77,184,255,.6);
+  animation:splashBar 1.2s ease-in-out infinite;
+}
+.splash-wave span:nth-child(1){ height:24px; animation-delay:0s; }
+.splash-wave span:nth-child(2){ height:40px; animation-delay:.12s; }
+.splash-wave span:nth-child(3){ height:56px; animation-delay:.24s; }
+.splash-wave span:nth-child(4){ height:64px; animation-delay:.36s; }
+.splash-wave span:nth-child(5){ height:56px; animation-delay:.48s; }
+.splash-wave span:nth-child(6){ height:40px; animation-delay:.6s; }
+.splash-wave span:nth-child(7){ height:24px; animation-delay:.72s; }
+@keyframes splashBar{ 0%,100%{ transform:scaleY(.35); opacity:.55; } 50%{ transform:scaleY(1); opacity:1; } }
+.splash-wordmark{
+  font-family:var(--ff-b); font-weight:800; font-size:clamp(38px,8vw,72px);
+  color:var(--t1); letter-spacing:.32em; text-transform:uppercase;
+  text-shadow:0 0 30px rgba(77,184,255,.15);
+}
+.splash-tag{
+  font-family:var(--ff-m); font-weight:500; font-size:clamp(10px,1.8vw,12px);
+  color:var(--ac); letter-spacing:.4em; text-transform:uppercase;
+  display:flex; align-items:center; gap:14px;
+}
+.splash-tag::before,.splash-tag::after{
+  content:""; display:block; width:32px; height:1px;
+  background:linear-gradient(90deg,transparent,var(--ac),transparent);
+}
+.splash-fmts{
+  display:flex; gap:18px; margin-top:8px;
+  font-family:var(--ff-m); font-size:11px; color:var(--t3); letter-spacing:.16em;
+}
+.splash-fmts span{ position:relative; }
+.splash-fmts span:not(:last-child)::after{
+  content:""; position:absolute; right:-10px; top:50%; transform:translateY(-50%);
+  width:3px; height:3px; background:var(--t4); border-radius:50%;
+}
+@media(prefers-reduced-motion:reduce){ .splash-wave span{ animation:none; opacity:.7; } }
+
+/* ══════════════════════════════════════════════════════════
+   APPLE / TIDAL SIDEBAR + COVER-FORWARD LIBRARY GRID
+   ══════════════════════════════════════════════════════════ */
+:root{ --nav:248px; }
+#sidebar{ background:var(--sidebar-bg); padding:0; }
+.sb-brand{
+  display:flex; align-items:center; gap:12px; padding:22px 22px 18px;
+  font-family:var(--ff-b); font-weight:700; font-size:14px; color:var(--t1);
+  letter-spacing:.22em; text-transform:uppercase; cursor:pointer;
+  border-bottom:1px solid var(--b1);
+}
+.sb-mark{ display:flex; align-items:flex-end; gap:2px; height:16px; }
+.sb-mark span{ display:block; width:3px; background:var(--ac); border-radius:1.5px; }
+.sb-mark span:nth-child(1){ height:7px; }
+.sb-mark span:nth-child(2){ height:13px; }
+.sb-mark span:nth-child(3){ height:16px; }
+.sb-mark span:nth-child(4){ height:10px; }
+.sb-scroll{ flex:1; overflow-y:auto; padding:8px 0; }
+.sb-lbl{
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--t4); padding:16px 22px 8px; font-weight:500;
+}
+.sb-item{
+  display:flex; align-items:center; gap:14px;
+  padding:9px 22px; margin:0;
+  font-family:var(--ff-b); font-size:14px; font-weight:500; color:var(--t2);
+  cursor:pointer; transition:color .12s,background .12s;
+  border-left:2px solid transparent; user-select:none; letter-spacing:0;
+}
+.sb-item:hover{ color:var(--t1); background:rgba(255,255,255,.02); }
+.sb-item.on{ color:var(--t1); background:rgba(77,184,255,.07); border-left-color:var(--ac); font-weight:600; }
+.sb-icon{ font-size:14px; width:18px; text-align:center; flex-shrink:0; opacity:.7; }
+.sb-item.on .sb-icon{ opacity:1; color:var(--ac); }
+.sb-count{
+  margin-left:auto; font-family:var(--ff-m); font-size:11px; color:var(--t3);
+  background:transparent; padding:0; border-radius:0;
+}
+.sb-item.on .sb-count{ color:var(--ac); }
+.sb-footer{ padding:14px 22px 18px; border-top:1px solid var(--b1); }
+
+/* Larger covers, less text noise — Tidal-style */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:24px; padding:24px 28px;
+}
+.alb-card{ cursor:pointer; transition:transform .2s; }
+.alb-card:hover{ transform:translateY(-2px); }
+.alb-art{
+  aspect-ratio:1; border-radius:8px; overflow:hidden;
+  background:var(--raised); position:relative;
+  box-shadow:var(--art-shadow); transition:box-shadow .25s;
+}
+.alb-card:hover .alb-art{ box-shadow:var(--art-shadow-hover); }
+.alb-play{
+  position:absolute; right:10px; bottom:10px;
+  width:48px; height:48px; border-radius:50%; background:var(--ac); color:#0E141B;
+  display:flex; align-items:center; justify-content:center; font-size:18px; padding-left:3px;
+  opacity:0; transform:translateY(8px) scale(.9);
+  transition:opacity .2s,transform .2s;
+  box-shadow:0 6px 18px rgba(0,0,0,.45);
+}
+.alb-card:hover .alb-play{ opacity:1; transform:translateY(0) scale(1); }
+.alb-meta{ margin-top:12px; display:flex; flex-direction:column; gap:2px; }
+.alb-title{
+  font-family:var(--ff-b); font-weight:600; font-size:14px; color:var(--t1);
+  letter-spacing:-0.005em; line-height:1.3;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.alb-artist{
+  font-family:var(--ff-b); font-weight:400; font-size:13px; color:var(--t2);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.alb-meta-info{ display:none; }
+
+/* Top bar polish */
+#topbar{ height:64px; padding:0 28px; }
+.tb-title{ font-family:var(--ff-b); font-weight:700; font-size:22px; letter-spacing:-0.01em; }
+
+/* Mobile recalibration on top of all of the above */
+@media(max-width:768px){
+  .sb-brand{ display:none; }
+  .grid{
+    grid-template-columns:repeat(2,1fr)!important;
+    gap:14px!important; padding:14px!important;
+  }
+  .alb-title{ font-size:13px; }
+  .alb-artist{ font-size:12px; }
+  #topbar{ padding:0 14px; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE LAUNCH SCREEN — first-paint brand moment on phone
+   ══════════════════════════════════════════════════════════ */
+#mob-launch{
+  display:none; position:fixed; inset:0; z-index:900;
+  background:linear-gradient(160deg,#0F1B2A 0%,#0E141B 55%,#06090D 100%);
+  flex-direction:column; align-items:center; justify-content:space-between;
+  padding:60px 28px 40px; text-align:center;
+}
+#mob-launch.show{ display:flex; }
+.ml-top{ display:flex; flex-direction:column; align-items:center; gap:14px; padding-top:30px; }
+.ml-wave{ display:flex; gap:5px; align-items:flex-end; height:42px; }
+.ml-wave span{
+  display:block; width:5px; background:var(--ac); border-radius:2.5px;
+  box-shadow:0 0 12px rgba(77,184,255,.5);
+  animation:splashBar 1.4s ease-in-out infinite;
+}
+.ml-wave span:nth-child(1){ height:14px; animation-delay:0s; }
+.ml-wave span:nth-child(2){ height:26px; animation-delay:.15s; }
+.ml-wave span:nth-child(3){ height:42px; animation-delay:.3s; }
+.ml-wave span:nth-child(4){ height:34px; animation-delay:.45s; }
+.ml-wave span:nth-child(5){ height:18px; animation-delay:.6s; }
+.ml-wordmark{
+  font-family:var(--ff-b); font-weight:800; font-size:44px;
+  letter-spacing:.26em; text-transform:uppercase; color:var(--t1); margin-top:6px;
+}
+.ml-tag{ font-family:var(--ff-m); font-size:10px; letter-spacing:.32em; color:var(--ac); text-transform:uppercase; }
+.ml-pitch{
+  max-width:300px;
+  font-family:var(--ff-b); font-size:16px; font-weight:500; color:var(--t2);
+  line-height:1.55; letter-spacing:-0.005em;
+}
+.ml-pitch strong{ color:var(--t1); font-weight:600; }
+.ml-cta{
+  width:100%; max-width:300px; padding:15px 18px;
+  background:var(--ac); color:#0E141B; border:none; border-radius:10px;
+  font-family:var(--ff-b); font-weight:700; font-size:15px; letter-spacing:.02em;
+  cursor:pointer; transition:opacity .15s,transform .1s;
+  box-shadow:0 12px 32px rgba(77,184,255,.25);
+}
+.ml-cta:active{ transform:translateY(1px); opacity:.92; }
+.ml-foot{ font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; color:var(--t4); text-transform:uppercase; }
+@media(min-width:769px){ #mob-launch{ display:none!important; } }
+
+/* Sidebar — drop leading icons entirely (Apple/Tidal style is text-only) */
+#sidebar .sb-item .sb-icon{ display:none!important; }
+#sidebar .sb-item{ padding-left:26px; }
+#sidebar .sb-item.on{ padding-left:24px; }
+
+/* Sidebar — Audio Quality panel docked below Server Connection */
+.sb-quality{
+  padding:14px 18px 18px; margin:0 14px 14px;
+  background:linear-gradient(180deg,rgba(255,255,255,.025) 0%,rgba(255,255,255,0) 100%);
+  border:1px solid var(--b1); border-radius:10px;
+}
+.sbq-lbl{
+  font-family:var(--ff-m); font-size:9.5px; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--t3); margin-bottom:10px; font-weight:500;
+}
+.sbq-rows{ display:flex; flex-direction:column; gap:6px; }
+.sbq-row{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-family:var(--ff-b); font-size:12px; color:var(--t2);
+}
+.sbq-row strong{
+  font-family:var(--ff-m); font-weight:500; font-size:11.5px; color:var(--t1);
+  letter-spacing:.02em;
+}
+.sbq-badge{
+  margin-top:10px; padding:7px 10px; border-radius:5px;
+  background:linear-gradient(135deg,rgba(212,168,75,.18),rgba(212,168,75,.06));
+  border:1px solid rgba(212,168,75,.32);
+  font-family:var(--ff-m); font-size:10px; font-weight:600;
+  letter-spacing:.16em; color:var(--gold); text-align:center; text-transform:uppercase;
+}
+.sbq-badge.std{
+  background:linear-gradient(135deg,rgba(77,184,255,.14),rgba(77,184,255,.04));
+  border-color:rgba(77,184,255,.3); color:var(--ac);
+}
+.sbq-badge.dim{
+  background:rgba(255,255,255,.025); border-color:var(--b1); color:var(--t4);
+}
+@media(max-width:768px){ .sb-quality{ display:none; } }
+
+/* ══════════════════════════════════════════════════════════
+   ALBUM DETAIL VIEW v2 — clean info, quality panel right, dedup tracks
+   ══════════════════════════════════════════════════════════ */
+.av2-back{
+  display:inline-flex; align-items:center; gap:8px;
+  margin:16px 28px 0; padding:8px 14px 8px 10px;
+  background:var(--b0); border:1px solid var(--b1); border-radius:18px;
+  font-family:var(--ff-b); font-weight:500; font-size:13px; color:var(--t2);
+  cursor:pointer; transition:background .15s,color .15s;
+}
+.av2-back:hover{ background:var(--b1); color:var(--t1); }
+.av2{ padding:24px 28px 60px; max-width:1400px; margin:0 auto; }
+.av2-hero{
+  display:grid; grid-template-columns:280px 1fr; gap:32px;
+  align-items:end; margin-bottom:32px;
+}
+.av2-art{
+  width:100%; aspect-ratio:1; border-radius:10px; overflow:hidden;
+  background:var(--raised); box-shadow:0 20px 50px rgba(0,0,0,.55),0 6px 16px rgba(0,0,0,.4);
+}
+.av2-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.av2-meta{ display:flex; flex-direction:column; gap:8px; }
+.av2-eyebrow{
+  font-family:var(--ff-m); font-size:11px; letter-spacing:.18em; color:var(--ac);
+  text-transform:uppercase; font-weight:500;
+}
+.av2-title{
+  font-family:var(--ff-b); font-weight:700; font-size:44px; line-height:1.05;
+  letter-spacing:-0.02em; color:var(--t1); margin:0;
+}
+.av2-artist{
+  font-family:var(--ff-b); font-weight:500; font-size:18px; color:var(--t1);
+  letter-spacing:-0.005em;
+}
+.av2-facts{
+  display:flex; gap:10px; flex-wrap:wrap;
+  font-family:var(--ff-m); font-size:12px; color:var(--t3); letter-spacing:.04em;
+  margin-top:4px;
+}
+.av2-facts span{ position:relative; }
+.av2-facts span:not(:last-child)::after{
+  content:""; display:inline-block; margin-left:10px;
+  width:3px; height:3px; background:var(--t4); border-radius:50%; vertical-align:middle;
+}
+.av2-actions{ display:flex; gap:10px; margin-top:16px; }
+.av2-play,.av2-shuf{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:11px 22px; border-radius:8px; border:none;
+  font-family:var(--ff-b); font-weight:600; font-size:14px; cursor:pointer;
+  transition:opacity .15s,transform .1s;
+}
+.av2-play{ background:var(--ac); color:#0E141B; }
+.av2-shuf{ background:var(--b1); color:var(--t1); }
+.av2-play:hover,.av2-shuf:hover{ opacity:.92; }
+.av2-play:active,.av2-shuf:active{ transform:translateY(1px); }
+.av2-quality{
+  background:var(--panel); border:1px solid var(--b1); border-radius:12px;
+  padding:18px 20px;
+}
+.av2-q-lbl{
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--t3); margin-bottom:14px;
+}
+.av2-q-rows{ display:flex; flex-direction:column; gap:10px; }
+.av2-q-row{
+  display:flex; justify-content:space-between; align-items:center;
+  font-family:var(--ff-b); font-size:13px; color:var(--t2);
+}
+.av2-q-row strong{
+  font-family:var(--ff-m); font-weight:500; font-size:12.5px; color:var(--t1); letter-spacing:.02em;
+}
+.av2-q-badge{
+  margin-top:12px; padding:8px 12px; border-radius:6px;
+  background:linear-gradient(135deg,rgba(212,168,75,.18),rgba(212,168,75,.08));
+  border:1px solid rgba(212,168,75,.35);
+  font-family:var(--ff-m); font-size:11px; font-weight:600;
+  letter-spacing:.14em; color:var(--gold); text-align:center; text-transform:uppercase;
+}
+.av2-q-badge.std{
+  background:linear-gradient(135deg,rgba(77,184,255,.14),rgba(77,184,255,.05));
+  border-color:rgba(77,184,255,.3); color:var(--ac);
+}
+.av2-desc{
+  margin:0 0 32px; padding:18px 22px;
+  background:var(--b0); border:1px solid var(--b1); border-radius:10px;
+  font-family:var(--ff-b); font-size:14px; line-height:1.65; color:var(--t2); letter-spacing:-0.003em;
+  max-width:780px;
+}
+.av2-tracks{ margin-top:8px; }
+.av2-trk-hdr{
+  display:grid; grid-template-columns:42px 1fr 80px 60px; gap:14px;
+  padding:8px 14px; margin-bottom:4px;
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--t4); border-bottom:1px solid var(--b1);
+}
+.av2-trk{
+  display:grid; grid-template-columns:42px 1fr 80px 60px; gap:14px;
+  padding:11px 14px; align-items:center; border-radius:6px;
+  cursor:pointer; transition:background .12s;
+}
+.av2-trk:hover{ background:var(--b0); }
+.av2-trk.playing{ background:rgba(77,184,255,.06); }
+.av2-trk.playing .av2-trk-ti{ color:var(--ac); font-weight:600; }
+.av2-trk-n{ font-family:var(--ff-m); font-size:13px; color:var(--t3); text-align:center; }
+.av2-trk-tt{ overflow:hidden; }
+.av2-trk-ti{
+  font-family:var(--ff-b); font-weight:500; font-size:14px; color:var(--t1);
+  letter-spacing:-0.005em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.av2-trk-by{
+  font-family:var(--ff-b); font-weight:400; font-size:12px; color:var(--t3);
+  margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.av2-trk-fmt{
+  font-family:var(--ff-m); font-size:11px; font-weight:500; letter-spacing:.06em;
+  color:var(--t3); text-transform:uppercase;
+}
+.av2-trk-dur{
+  font-family:var(--ff-m); font-size:12.5px; color:var(--t3); text-align:right;
+}
+.av2-empty{
+  padding:32px; text-align:center; color:var(--t3);
+  font-family:var(--ff-m); font-size:12px; letter-spacing:.08em;
+}
+
+/* Tablet — collapse the right quality panel under metadata */
+@media(max-width:1080px){
+  .av2-hero{ grid-template-columns:240px 1fr; }
+  .av2-quality{ grid-column:1/-1; }
+}
+/* Phone — single-column hero */
+@media(max-width:768px){
+  .av2{ padding:16px; }
+  .av2-back{ margin:0 0 12px; }
+  .av2-hero{ grid-template-columns:1fr; gap:18px; margin-bottom:24px; }
+  .av2-art{ max-width:240px; margin:0 auto; }
+  .av2-title{ font-size:30px; text-align:center; }
+  .av2-artist,.av2-facts,.av2-actions{ justify-content:center; text-align:center; }
+  .av2-actions{ justify-content:center; }
+  .av2-trk-hdr,.av2-trk{ grid-template-columns:34px 1fr 60px; gap:10px; padding:10px; }
+  .av2-trk-hdr span:nth-child(3),.av2-trk-fmt{ display:none; }
+}
+
 </style>
 <link rel="manifest" href="manifest.json">
 </head>
+
+<!-- SPLASH / LOADING — branded hi-res audio moment -->
+<div id="splash">
+  <div class="splash-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="splash-wordmark">AURALIS</div>
+  <div class="splash-tag">Hi-Res Audio Player</div>
+  <div class="splash-fmts"><span>FLAC</span><span>ALAC</span><span>DSD</span><span>MQA</span><span>24-BIT</span></div>
+</div>
+
+<!-- MOBILE LAUNCH — first paint on phone when disconnected -->
+<div id="mob-launch">
+  <div class="ml-top">
+    <div class="ml-wave"><span></span><span></span><span></span><span></span><span></span></div>
+    <div class="ml-wordmark">AURALIS</div>
+    <div class="ml-tag">Hi-Res Audio</div>
+  </div>
+  <div class="ml-pitch">Your <strong>lossless library</strong>, streamed from your own server.<br>FLAC · ALAC · DSD · MQA · 24-bit / 96 kHz.</div>
+  <button class="ml-cta" onclick="document.getElementById('mob-launch').classList.remove('show');showConnectModal()">Connect your library</button>
+  <div class="ml-foot">Private · Lossless · Yours</div>
+</div>
 
 <div id="app">
 
@@ -521,19 +911,35 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
   <!-- SIDEBAR -->
   <aside id="sidebar">
+    <div class="sb-brand" onclick="go('home')">
+      <div class="sb-mark"><span></span><span></span><span></span><span></span></div>
+      AURALIS
+    </div>
     <div class="sb-scroll">
+      <div class="sb-lbl">Apple Music</div>
+      <div class="sb-item on" data-nav="home"     onclick="go('home')"   >Listen Now</div>
+      <div class="sb-item"    data-nav="ai"       onclick="go('ai')"     >Browse</div>
+
       <div class="sb-lbl">Library</div>
-      <div class="sb-item on" data-nav="home"    onclick="go('home')"   ><span class="sb-icon">⌂</span>Home</div>
-      <div class="sb-item"    data-nav="library" onclick="go('library')"><span class="sb-icon">⊞</span>Library<span class="sb-count" id="libCount">0</span></div>
-      <div class="sb-item"    data-nav="artists" onclick="go('artists')"><span class="sb-icon">♪</span>Artists</div>
-      <div class="sb-lbl" style="margin-top:8px">Collection</div>
-      <div class="sb-item" onclick="filterFmt('FLAC')"><span class="sb-icon">⬡</span>FLAC Hi-Res</div>
-      <div class="sb-item" onclick="filterFmt('DSD')"><span class="sb-icon">◈</span>DSD</div>
-      <div class="sb-item" onclick="filterFmt('MQA')"><span class="sb-icon">◉</span>MQA</div>
-      <div class="sb-sep" style="height:1px;background:var(--b1);margin:8px 12px"></div>
-      <div class="sb-item" data-nav="ai" onclick="go('ai')" style="color:var(--ac)"><span class="sb-icon">✦</span>AI Recommendations</div>
-      <div class="sb-item" onclick="openImport()"><span class="sb-icon">⊕</span>Import Audio</div>
-      <div class="sb-item" onclick="showConnectModal()"><span class="sb-icon">⚡</span>Server Connection</div>
+      <div class="sb-item"    data-nav="library"  onclick="go('library')">Albums<span class="sb-count" id="libCount">0</span></div>
+      <div class="sb-item"    data-nav="artists"  onclick="go('artists')">Artists</div>
+      <div class="sb-item"                        onclick="go('library')">Songs</div>
+      <div class="sb-item"                        onclick="go('library')">Genres</div>
+      <div class="sb-item"                        onclick="go('library')">Recently Added</div>
+
+      <div class="sb-lbl">Hi-Res</div>
+      <div class="sb-item" onclick="filterFmt('FLAC')">FLAC Lossless</div>
+      <div class="sb-item" onclick="filterFmt('DSD')">DSD</div>
+      <div class="sb-item" onclick="filterFmt('MQA')">MQA</div>
+
+      <div class="sb-lbl">Discovery</div>
+      <div class="sb-item" data-nav="ai"          onclick="go('ai')">AI Recommendations</div>
+
+      <div class="sb-lbl">Tools</div>
+      <div class="sb-item" onclick="toggleMiniPlayer()">Mini Player</div>
+      <div class="sb-item" onclick="openImport()">Import Audio</div>
+      <div class="sb-item" onclick="showConnectModal()">Server Connection</div>
+      <div class="sb-item" data-nav="settings"    onclick="go('settings')">Settings</div>
     </div>
     <div class="sb-footer">
       <div class="sb-db">
@@ -543,6 +949,17 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
           <div class="sb-db-text" style="color:var(--t4);font-size:9px" id="dbSub">No tracks loaded</div>
         </div>
       </div>
+    </div>
+    <!-- AUDIO QUALITY PANEL — persistent, populated by updateNowPlaying / openAlbum -->
+    <div class="sb-quality" id="sbQuality">
+      <div class="sbq-lbl">Audio Quality</div>
+      <div class="sbq-rows">
+        <div class="sbq-row"><span>Format</span><strong id="sbqFormat">—</strong></div>
+        <div class="sbq-row"><span>Bit Depth</span><strong id="sbqBit">—</strong></div>
+        <div class="sbq-row"><span>Sample Rate</span><strong id="sbqSr">—</strong></div>
+        <div class="sbq-row"><span>Channels</span><strong id="sbqCh">Stereo</strong></div>
+      </div>
+      <div class="sbq-badge" id="sbqBadge">LOSSLESS</div>
     </div>
   </aside>
 
@@ -572,7 +989,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   <!-- PLAYBAR -->
   <div id="playbar">
     <div class="pb-left">
-      <div class="pb-art" id="pbArt">ðŸŽµ</div>
+      <div class="pb-art" id="pbArt">🎵</div>
       <div class="pb-info">
         <div class="pb-title"  id="pbTitle">Select a track</div>
         <div class="pb-artist" id="pbArtist">Import your library to begin</div>
@@ -598,7 +1015,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     </div>
     <div class="pb-right">
       <div class="pb-vol">
-        ðŸ”Š
+        🔊
         <div class="pb-vol-bar" id="volBar" onclick="setVol(event)">
           <div class="pb-vol-fill" id="volFill" style="width:80%"></div>
         </div>
@@ -615,7 +1032,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="imp-title">Import Audio Library</div>
     <div class="imp-sub">Supports FLAC, DSD, MQA, WAV, AIFF, ALAC, MP3. Metadata is read from ID3 tags automatically.</div>
     <div class="drop-zone" id="dropZone">
-      <div class="dz-icon">ðŸŽµ</div>
+      <div class="dz-icon">🎵</div>
       <div class="dz-title">Drop files or folder here</div>
       <div class="dz-sub">Click to browse files</div>
       <div class="dz-fmts">
@@ -628,7 +1045,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <input type="file" id="fileInput" multiple accept=".flac,.dsf,.dff,.wav,.aiff,.aif,.alac,.mp3,.aac,.m4a,.mqa" style="display:none">
     <input type="file" id="folderInput" multiple webkitdirectory accept=".flac,.dsf,.dff,.wav,.aiff,.aif,.alac,.mp3,.aac,.m4a,.mqa" style="display:none">
     <div class="imp-or">or</div>
-    <button class="imp-folder" onclick="document.getElementById('folderInput').click()">ðŸ“ Select Folder</button>
+    <button class="imp-folder" onclick="document.getElementById('folderInput').click()">📁 Select Folder</button>
     <div class="imp-prog" id="impProg">
       <div class="imp-prog-hdr"><span id="impTtl">Scanning…</span><span id="impPct">0%</span></div>
       <div class="imp-bar"><div class="imp-bar-fill" id="impBar" style="width:0%"></div></div>
@@ -651,7 +1068,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   <div class="fs-ov"></div>
   <button class="fs-close" onclick="closeFs()">✕</button>
   <div class="fs-body">
-    <div class="fs-art" id="fsArt">ðŸŽµ</div>
+    <div class="fs-art" id="fsArt">🎵</div>
     <div class="fs-title"  id="fsTitle">—</div>
     <div class="fs-artist" id="fsArtist">—</div>
     <div class="fs-tags"   id="fsTags"></div>
@@ -687,6 +1104,85 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   </div>
   <button class="mob-np-btn" id="mobPlay" onclick="event.stopPropagation();togglePlay()">▶</button>
 </div>
+<!-- MINI PLAYER — compact floating widget; toggled from main player or keyboard 'M' -->
+<div id="mini-player" class="mp-hidden">
+  <button class="mp-close" onclick="toggleMiniPlayer()" title="Close">✕</button>
+  <div class="mp-art" id="mpArt">🎵</div>
+  <div class="mp-body">
+    <div class="mp-info">
+      <div class="mp-title" id="mpTitle">No track</div>
+      <div class="mp-artist" id="mpArtist">Press play to begin</div>
+    </div>
+    <div class="mp-ctrls">
+      <button class="mp-btn" onclick="skipPrev()" title="Previous">⏮</button>
+      <button class="mp-play" id="mpPlay" onclick="togglePlay()">▶</button>
+      <button class="mp-btn" onclick="skipNext()" title="Next">⏭</button>
+    </div>
+  </div>
+  <div class="mp-bar" id="mpBar" onclick="seekClick(event)"><div class="mp-fill" id="mpFill"></div></div>
+</div>
+<style>
+#mini-player{
+  position:fixed; bottom:96px; right:20px; z-index:900;
+  width:340px; padding:14px 14px 16px 14px;
+  background:rgba(17,24,31,.92); border:1px solid var(--b2); border-radius:14px;
+  backdrop-filter:blur(22px) saturate(160%); -webkit-backdrop-filter:blur(22px) saturate(160%);
+  box-shadow:0 20px 48px rgba(0,0,0,.55),0 6px 18px rgba(0,0,0,.4);
+  display:flex; align-items:center; gap:12px; transition:opacity .2s,transform .2s;
+}
+#mini-player.mp-hidden{ opacity:0; transform:translateY(8px); pointer-events:none; }
+.mp-art{
+  width:60px; height:60px; border-radius:6px; flex-shrink:0;
+  background:var(--raised); overflow:hidden;
+  display:flex; align-items:center; justify-content:center; font-size:22px;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);
+}
+.mp-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.mp-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:8px; }
+.mp-info{ min-width:0; }
+.mp-title{
+  font-family:var(--ff-b); font-weight:600; font-size:13.5px; color:var(--t1);
+  letter-spacing:-0.005em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mp-artist{
+  font-family:var(--ff-b); font-size:11.5px; color:var(--t3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mp-ctrls{ display:flex; align-items:center; gap:4px; }
+.mp-btn{
+  width:30px; height:30px; border-radius:50%;
+  background:transparent; color:var(--t2); font-size:13px;
+  display:flex; align-items:center; justify-content:center;
+  transition:color .12s,background .12s;
+}
+.mp-btn:hover{ color:var(--t1); background:var(--b1); }
+.mp-play{
+  width:36px; height:36px; border-radius:50%;
+  background:var(--ac); color:#0E141B; font-size:13px; padding-left:2px;
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:0 4px 10px rgba(77,184,255,.35);
+}
+.mp-close{
+  position:absolute; top:6px; right:6px;
+  width:20px; height:20px; border-radius:50%;
+  font-size:10px; color:var(--t3); background:transparent;
+  display:flex; align-items:center; justify-content:center;
+  opacity:.6; transition:opacity .12s,background .12s;
+}
+.mp-close:hover{ opacity:1; background:var(--b1); }
+.mp-bar{
+  position:absolute; left:0; right:0; bottom:0;
+  height:3px; background:var(--b1); border-radius:0 0 14px 14px;
+  cursor:pointer; overflow:hidden;
+}
+.mp-fill{ height:100%; background:var(--ac); width:0%; transition:width .12s linear; }
+@media(max-width:768px){
+  #mini-player{
+    bottom:140px; right:12px; left:12px; width:auto;
+  }
+}
+</style>
 <div id="toasts"></div>
 
 <!-- CONNECT MODAL — shown when no server credentials saved -->
@@ -1087,10 +1583,10 @@ function updateNowPlaying(t) {
   el=document.getElementById('pbTitle');   if(el) el.textContent=t.title;
   el=document.getElementById('pbArtist');  if(el) el.textContent=t.artist;
   el=document.getElementById('pbFmt');     if(el) el.textContent=fmtStr||'—';
-  el=document.getElementById('pbArt');     if(el) el.innerHTML = t.art ? '<img src="'+t.art+'" alt="">' : 'ðŸŽµ';
+  el=document.getElementById('pbArt');     if(el) el.innerHTML = t.art ? '<img src="'+t.art+'" alt="">' : '🎵';
   el=document.getElementById('fsTitle');   if(el) el.textContent=t.title;
   el=document.getElementById('fsArtist');  if(el) el.textContent=t.artist;
-  el=document.getElementById('fsArt');     if(el) el.innerHTML = t.art ? '<img src="'+t.art+'" alt="">' : 'ðŸŽµ';
+  el=document.getElementById('fsArt');     if(el) el.innerHTML = t.art ? '<img src="'+t.art+'" alt="">' : '🎵';
   el=document.getElementById('fsBg');      if(el && t.art) el.style.backgroundImage='url('+t.art+')';
   el=document.getElementById('fsTags');    if(el) el.innerHTML =
     (t.ext?'<span class="tag tag-gold">'+(t.ext||'').toUpperCase()+'</span>':'')+
@@ -1453,14 +1949,14 @@ function render() {
 function renderHome(p) {
   var albs = Object.values(S.albums);
   if (!albs.length) {
-    p.innerHTML = '<div class="empty"><div class="empty-icon">ðŸŽµ</div><div class="empty-title">Your library is empty</div><div class="empty-sub">Import your FLAC, DSD, WAV or MP3 files to get started. Metadata, album art and track info is read automatically.</div><button class="empty-btn" onclick="openImport()">⊕ Import Audio Library</button></div>';
+    p.innerHTML = '<div class="empty"><div class="empty-icon">🎵</div><div class="empty-title">Your library is empty</div><div class="empty-sub">Import your FLAC, DSD, WAV or MP3 files to get started. Metadata, album art and track info is read automatically.</div><button class="empty-btn" onclick="openImport()">⊕ Import Audio Library</button></div>';
     return;
   }
 
   // Hero: currently playing or first album
   var heroAlb = (S.current && S.albums[S.current.albumId]) ? S.albums[S.current.albumId] : albs[0];
   var heroBg  = heroAlb.art ? 'url('+heroAlb.art+')' : '';
-  var heroArt = heroAlb.art ? '<img src="'+heroAlb.art+'" alt="'+esc(heroAlb.title)+'">' : 'ðŸŽµ';
+  var heroArt = heroAlb.art ? '<img src="'+heroAlb.art+'" alt="'+esc(heroAlb.title)+'">' : '🎵';
 
   var heroHtml = '<div class="hero">'+
     (heroBg?'<div class="hero-bg" style="background-image:'+heroBg+'"></div>':'')+
@@ -1503,7 +1999,7 @@ function stat(val,lbl,col) {
 function renderLibrary() {
   var albs=Object.values(S.albums);
   var filtered = S.filter ? albs.filter(function(a){return a.format===S.filter;}) : albs;
-  if (!albs.length) return '<div class="empty"><div class="empty-icon">ðŸŽµ</div><div class="empty-title">Library is empty</div><div class="empty-sub">Import your audio files to get started.</div><button class="empty-btn" onclick="openImport()">⊕ Import Audio</button></div>';
+  if (!albs.length) return '<div class="empty"><div class="empty-icon">🎵</div><div class="empty-title">Library is empty</div><div class="empty-sub">Import your audio files to get started.</div><button class="empty-btn" onclick="openImport()">⊕ Import Audio</button></div>';
   if (!filtered.length) return '<div class="empty"><div class="empty-icon">ðŸ”</div><div class="empty-title">No '+S.filter+' albums</div><button class="empty-btn" onclick="go(\'library\')">Clear filter</button></div>';
   return '<div class="sec-hdr"><div class="sec-title">Library</div><div class="sec-sub">'+filtered.length+' albums'+(S.filter?' · '+S.filter+' filter':' · all formats')+'</div></div><div class="grid">'+filtered.map(albumCard).join('')+'</div>';
 }
@@ -1570,7 +2066,7 @@ function srow(k,v){
 
 // ── ALBUM CARD ─────────────────────────────────────────
 function albumCard(alb) {
-  var art = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<div class="alb-placeholder">ðŸŽµ</div>';
+  var art = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<div class="alb-placeholder">🎵</div>';
   var fmtCol = alb.format==='DSD'?'var(--gold)':alb.format==='MQA'?'var(--ac)':'var(--green)';
   return '<div class="alb" onclick="openAlbum(\''+alb.id+'\')">'+
     '<div class="alb-art">'+art+
@@ -1584,97 +2080,139 @@ function albumCard(alb) {
 }
 
 // ── ALBUM DETAIL ───────────────────────────────────────
-function openAlbum(id) {
+async function openAlbum(id) {
   var alb = S.albums[id];
   if (!alb) { console.warn('openAlbum: album not found:', id); toast('⚠','Album not found','warn'); return; }
   if (!alb.tracks) alb.tracks = [];
   S.currentAlbumId = id;
   showPage(false);
 
-  var art    = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<span style="font-size:64px">ðŸŽµ</span>';
-  var bgStyle= alb.art ? 'background-image:url('+alb.art+')' : '';
-  var fmtCol = alb.format==='DSD'?'var(--gold)':alb.format==='MQA'?'var(--ac)':'var(--green)';
+  // Lazy-load Navidrome tracks (audit fix H-05 — previously album track lists were empty until Play).
+  if (NAV.connected && (!alb.tracks || alb.tracks.length === 0)) {
+    var av = document.getElementById('album-view');
+    av.innerHTML = '<div style="padding:80px 28px;text-align:center;color:var(--t3);font-family:var(--ff-m);font-size:12px;letter-spacing:.08em">LOADING ALBUM</div>';
+    try { await navLoadAlbumTracks(id); } catch(e){ console.warn('navLoadAlbumTracks failed:', e); }
+  }
 
-  // Tracks list
-  var tracksHtml = alb.tracks.map(function(t, i) {
-    var isPlaying = S.current && S.current.title===t.title && S.current.artist===t.artist;
-    var qIdx = S.queue.findIndex(function(q){return q.url===t.url;});
-    return '<div class="av-track'+(isPlaying?' playing':'')+'" onclick="playEntry('+qIdx+')">'+
-      '<div class="av-track-num">'+(isPlaying?'▶':(t.trackNum||i+1))+'</div>'+
-      '<div class="av-track-info">'+
-        '<div class="av-track-title">'+esc(t.title)+'</div>'+
-        '<div class="av-track-artist">'+esc(t.artist||alb.artist||'')+'</div>'+
-      '</div>'+
-      '<div class="av-track-fmt" style="color:'+fmtCol+'">'+t.ext.toUpperCase()+'</div>'+
-      '<div class="av-track-dur">—</div>'+
-    '</div>';
-  }).join('');
+  // De-duplicate: same trackNum + title or same title+artist combo.
+  var seen = {};
+  alb.tracks = (alb.tracks || []).filter(function(t){
+    var key = (t.trackNum||0) + '::' + (t.title||'').trim().toLowerCase();
+    if (seen[key]) return false;
+    seen[key] = 1;
+    return true;
+  });
 
-  // Quality rings data
-  var isHi = alb.isHi;
-  var dr = isHi?92:75, snr=isHi?96:80, lufs=isHi?88:72;
-  var ringHtml =
-    ring(dr,'DR','#d4a84b')+
-    ring(snr,'SNR','#4db8ff')+
-    ring(lufs,'LUF','#3ecf7a');
+  // Compute album summary from tracks (so the right-rail quality panel reflects what we actually have).
+  var totalSec = 0, maxBit = 16, maxSr = 44100, formats = {};
+  alb.tracks.forEach(function(t){
+    totalSec += (t.duration||0);
+    if (t.bit && t.bit > maxBit) maxBit = t.bit;
+    if (t.sr  && t.sr  > maxSr)  maxSr  = t.sr;
+    if (t.ext) formats[t.ext.toUpperCase()] = 1;
+  });
+  var hh = Math.floor(totalSec/3600), mm = Math.floor((totalSec%3600)/60), ss = totalSec%60;
+  var runtime = (hh?hh+'h ':'') + mm + 'm';
+  var formatSummary = Object.keys(formats).join(' · ') || (alb.format || 'FLAC');
+  var srLabel = (maxSr/1000).toFixed(maxSr%1000?1:0)+' kHz';
+  var isHi = maxBit >= 24 || maxSr >= 48000;
+
+  var art = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<span style="font-size:64px">🎵</span>';
+
+  // Track rows — clean, no fluff. # · title · duration. Different artist shown only when not the album artist.
+  function fmtDur(s){ if(!s||isNaN(s))return '—'; var m=Math.floor(s/60),x=Math.floor(s%60); return m+':'+(x<10?'0':'')+x; }
+  var tracksHtml = alb.tracks.length === 0
+    ? '<div class="av2-empty">Track list unavailable</div>'
+    : alb.tracks.map(function(t, i) {
+        var isPlaying = S.current && S.current.title===t.title && S.current.artist===t.artist;
+        var qIdx = S.queue.findIndex(function(q){return q.url===t.url;});
+        var altArtist = t.artist && t.artist !== alb.artist ? '<div class="av2-trk-by">'+esc(t.artist)+'</div>' : '';
+        return '<div class="av2-trk'+(isPlaying?' playing':'')+'" onclick="playEntry('+qIdx+')">'+
+          '<div class="av2-trk-n">'+(isPlaying?'▶':(t.trackNum||i+1))+'</div>'+
+          '<div class="av2-trk-tt">'+
+            '<div class="av2-trk-ti">'+esc(t.title)+'</div>'+altArtist+
+          '</div>'+
+          '<div class="av2-trk-fmt">'+(t.ext||'').toUpperCase()+'</div>'+
+          '<div class="av2-trk-dur">'+fmtDur(t.duration)+'</div>'+
+        '</div>';
+      }).join('');
 
   var av = document.getElementById('album-view');
   av.innerHTML =
-    '<div class="av-hero">'+
-      (bgStyle?'<div class="av-hero-bg" style="'+bgStyle+'"></div>':'')+
-      '<div class="av-hero-grad"></div>'+
-      '<div class="av-hero-content">'+
-        '<div class="av-art">'+art+'</div>'+
-        '<div class="av-meta">'+
-          '<div class="av-back" onclick="go(\'library\')">← Back to Library</div>'+
-          '<div class="av-album-label">Album</div>'+
-          '<div class="av-title">'+esc(alb.title)+'</div>'+
-          '<div class="av-artist">'+esc(alb.artist||'')+'</div>'+
-          (alb.year?'<div class="av-year">'+alb.year+(alb.genre?' · '+esc(alb.genre):'')+'</div>':'')+
-          '<div class="av-tags">'+
-            (alb.format?'<span class="tag tag-gold">'+alb.format+'</span>':'')+
-            (isHi?'<span class="tag tag-blue">Hi-Res 24-bit</span>':'')+
-            (alb.tracks.length?'<span class="tag tag-green">'+alb.tracks.length+' Tracks</span>':'')+
+    '<div class="av2-back" onclick="go(\'library\')">← Library</div>'+
+    '<div class="av2">'+
+      '<header class="av2-hero">'+
+        '<div class="av2-art">'+art+'</div>'+
+        '<div class="av2-meta">'+
+          '<div class="av2-eyebrow">Album</div>'+
+          '<h1 class="av2-title">'+esc(alb.title)+'</h1>'+
+          '<div class="av2-artist">'+esc(alb.artist||'Unknown Artist')+'</div>'+
+          '<div class="av2-facts">'+
+            (alb.year?'<span>'+alb.year+'</span>':'')+
+            (alb.genre?'<span>'+esc(alb.genre)+'</span>':'')+
+            '<span>'+alb.tracks.length+' track'+(alb.tracks.length===1?'':'s')+'</span>'+
+            (totalSec?'<span>'+runtime+'</span>':'')+
           '</div>'+
-          '<div class="av-actions">'+
-            '<button class="av-play" onclick="playAlbum(\''+id+'\')">▶ Play Album</button>'+
-            '<button class="av-shuffle" onclick="playAlbumShuffle(\''+id+'\')">⇄ Shuffle</button>'+
+          '<div class="av2-actions">'+
+            '<button class="av2-play" onclick="playAlbum(\''+id+'\')">▶ Play album</button>'+
+            '<button class="av2-shuf" onclick="playAlbumShuffle(\''+id+'\')">⇄ Shuffle</button>'+
           '</div>'+
         '</div>'+
-      '</div>'+
-    '</div>'+
-    '<div class="av-body">'+
-      '<div class="av-tracks">'+
-        '<div class="av-track-hdr"><span>#</span><span>Title</span><span>Format</span><span>Duration</span></div>'+
+      '</header>'+
+      (alb.description||alb.notes?'<section class="av2-desc">'+esc(alb.description||alb.notes)+'</section>':'')+
+      '<section class="av2-tracks">'+
+        '<div class="av2-trk-hdr"><span>#</span><span>Title</span><span>Format</span><span>Time</span></div>'+
         tracksHtml+
-      '</div>'+
-      '<div class="av-info-panel">'+
-        '<div class="av-info-section">'+
-          '<div class="av-info-title">Audio Specifications</div>'+
-          avSpec('Format',alb.format||'—')+
-          avSpec('Bit Depth',isHi?'24-bit':'16-bit')+
-          avSpec('Sample Rate',isHi?'96 kHz':'44.1 kHz')+
-          avSpec('Tracks',alb.tracks.length+'')+
-          (alb.year?avSpec('Year',alb.year):'')+
-          (alb.genre?avSpec('Genre',alb.genre):'')+
-          avSpec('Quality Score',isHi?'90 / 100':'72 / 100')+
-        '</div>'+
-        '<div class="av-info-section">'+
-          '<div class="av-info-title">Audio Quality</div>'+
-          '<div class="av-quality-rings">'+
-            ringHtml+
-            '<div class="av-ring-info">'+
-              'Dynamic Range <span>'+(isHi?'DR12':'DR8')+'</span><br>'+
-              'Signal/Noise <span>'+(isHi?'−96 dB':'−80 dB')+'</span><br>'+
-              'Loudness <span>'+(isHi?'−14 LUFS':'−10 LUFS')+'</span>'+
-            '</div>'+
-          '</div>'+
-        '</div>'+
-      '</div>'+
+      '</section>'+
     '</div>'+
     '<div class="alb-ai-panel"><div class="alb-ai-title">✦ AI Insight</div><div id="albAIInsight"><div class="ai-loading"><div class="ai-spinner"></div>Generating insight…</div></div></div>';
 
   setTimeout(function(){ loadAlbumAIInsight(alb); }, 100);
+  setSidebarQuality({ format:formatSummary, bit:maxBit, sr:maxSr, hi:isHi });
+}
+
+// Mini-player toggle. Bound to a sidebar item and keyboard 'M'.
+function toggleMiniPlayer(){
+  var mp = document.getElementById('mini-player');
+  if (!mp) return;
+  if (mp.classList.contains('mp-hidden')) {
+    mp.classList.remove('mp-hidden');
+    syncMiniPlayer();
+  } else {
+    mp.classList.add('mp-hidden');
+  }
+}
+// Sync the mini-player with current S.current / S.progress.
+function syncMiniPlayer(){
+  var t = S.current;
+  var tt = document.getElementById('mpTitle');
+  var ar = document.getElementById('mpArtist');
+  var at = document.getElementById('mpArt');
+  var pl = document.getElementById('mpPlay');
+  var fl = document.getElementById('mpFill');
+  if (tt) tt.textContent = t && t.title  ? t.title  : 'No track';
+  if (ar) ar.textContent = t && t.artist ? t.artist : 'Press play to begin';
+  if (at) {
+    if (t && t.art) at.innerHTML = '<img src="'+t.art+'" alt="">';
+    else at.innerHTML = '🎵';
+  }
+  if (pl) pl.textContent = S.playing ? '⏸' : '▶';
+  if (fl && AUD && AUD.duration) {
+    fl.style.width = ((AUD.currentTime / AUD.duration) * 100) + '%';
+  }
+}
+
+// Update sidebar audio-quality panel.
+function setSidebarQuality(q) {
+  var fEl = document.getElementById('sbqFormat'); if (fEl) fEl.textContent = q.format || '—';
+  var bEl = document.getElementById('sbqBit');    if (bEl) bEl.textContent = q.bit ? (q.bit+'-bit') : '—';
+  var sEl = document.getElementById('sbqSr');     if (sEl) sEl.textContent = q.sr ? ((q.sr/1000).toFixed(q.sr%1000?1:0)+' kHz') : '—';
+  var cEl = document.getElementById('sbqCh');     if (cEl) cEl.textContent = q.channels || 'Stereo';
+  var bg  = document.getElementById('sbqBadge');
+  if (bg) {
+    bg.className = 'sbq-badge' + (q.hi ? '' : (q.format ? ' std' : ' dim'));
+    bg.textContent = q.hi ? 'HI-RES LOSSLESS' : (q.format ? 'LOSSLESS' : 'NO TRACK');
+  }
 }
 
 function ring(pct, lbl, col) {
@@ -2029,7 +2567,7 @@ var MOODS = [
   { id:'energy',    label:'High Energy',   icon:'⚡', prompt:'upbeat, fast tempo, energetic, driving beat' },
   { id:'relaxed',   label:'Relaxed',       icon:'ðŸŒŠ', prompt:'mellow, calm, smooth jazz, acoustic' },
   { id:'discover',  label:'Discover',      icon:'ðŸ”­', prompt:'eclectic, world music, experimental, new sounds' },
-  { id:'nostalgic', label:'Nostalgic',     icon:'ðŸ“»', prompt:'classic rock, oldies, vintage, timeless' },
+  { id:'nostalgic', label:'Nostalgic',     icon:'📁»', prompt:'classic rock, oldies, vintage, timeless' },
   { id:'late-night',label:'Late Night',    icon:'ðŸŒ™', prompt:'lo-fi, atmospheric, slow jazz, dark ambient' },
 ];
 
@@ -2293,7 +2831,7 @@ function renderAIHub() {
 
     // ── Listening Stats
     '<div class="ai-section">'+
-      '<div class="ai-section-hdr"><div class="ai-section-title"><span class="ai-icon">ðŸ“Š</span> Your Listening Profile</div></div>'+
+      '<div class="ai-section-hdr"><div class="ai-section-title"><span class="ai-icon">📁Š</span> Your Listening Profile</div></div>'+
       '<div class="ai-stats">'+
         aiStat(stats.totalPlays,'Plays today','var(--ac)')+
         aiStat(stats.topArtist,'Top artist','var(--gold)')+
@@ -2328,7 +2866,7 @@ function renderAIHub() {
 }
 
 function aiAlbCard(alb) {
-  var art = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px">ðŸŽµ</div>';
+  var art = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px">🎵</div>';
   return '<div class="ai-alb-card" onclick="openAlbum(\''+alb.id+'\')" title="'+esc(alb.title)+'">'+
     '<div class="ai-alb-art">'+art+'<button class="ai-alb-play" onclick="event.stopPropagation();playAlbum(\''+alb.id+'\')">▶</button></div>'+
     '<div class="ai-alb-title">'+esc(alb.title)+'</div>'+
@@ -2837,7 +3375,7 @@ async function connectNow() {
 function renderNavAlbumShell(alb) {
   var av = document.getElementById('album-view');
   var bgStyle = alb.artLarge ? 'background-image:url('+alb.artLarge+')' : '';
-  var artHtml  = alb.art     ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'" style="width:100%;height:100%;object-fit:cover">' : '<span style="font-size:64px">ðŸŽµ</span>';
+  var artHtml  = alb.art     ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'" style="width:100%;height:100%;object-fit:cover">' : '<span style="font-size:64px">🎵</span>';
   av.innerHTML =
     '<div class="av-hero">'+
       (bgStyle?'<div class="av-hero-bg" style="'+bgStyle+'"></div>':'')+
@@ -2895,16 +3433,31 @@ function showConnectModal() {
 function boot() {
   go('home');
   loadIntelFromDB().then(function() {
-    if (NAV.user && NAV.pass) {
-      // Hide modal — already have credentials
-      var m = document.getElementById('connect-modal');
-      if (m) m.style.display = 'none';
+    var hasCreds = NAV.user && NAV.pass;
+    var isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (hasCreds) {
+      // Hide both prompts — already have credentials
+      var m = document.getElementById('connect-modal'); if (m) m.style.display = 'none';
+      var ml = document.getElementById('mob-launch');   if (ml) ml.classList.remove('show');
       navConnect(NAV.user, NAV.pass).then(function(ok) {
-        if (!ok) showConnectModal();
+        if (!ok) {
+          if (isMobile) { document.getElementById('mob-launch').classList.add('show'); }
+          else { showConnectModal(); }
+        }
       });
+    } else if (isMobile) {
+      // Mobile launch screen instead of modal
+      var m2 = document.getElementById('connect-modal'); if (m2) m2.style.display = 'none';
+      var ml2 = document.getElementById('mob-launch');   if (ml2) ml2.classList.add('show');
     }
-    // else modal stays visible (display:flex by default)
+    // else (desktop, no creds): connect-modal stays visible by default
   });
+
+  // Dismiss splash once the shell is paintable.
+  setTimeout(function(){
+    var sp = document.getElementById('splash');
+    if (sp) { sp.classList.add('gone'); setTimeout(function(){ if (sp.parentNode) sp.parentNode.removeChild(sp); }, 700); }
+  }, 1200);
 }
 
 if (document.readyState === 'loading') {
