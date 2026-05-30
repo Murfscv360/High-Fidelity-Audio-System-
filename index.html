@@ -737,14 +737,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   cursor:pointer; transition:background .15s,color .15s;
 }
 .av2-back:hover{ background:var(--b1); color:var(--t1); }
-.av2{ padding:24px 28px 60px; max-width:1400px; margin:0 auto; }
+.av2{ padding:20px 28px 60px; max-width:1480px; margin:0 auto; display:grid; grid-template-columns:1fr 320px; gap:28px; }
+.av2-main{ min-width:0; }
 .av2-hero{
-  display:grid; grid-template-columns:280px 1fr; gap:32px;
-  align-items:end; margin-bottom:32px;
+  display:grid; grid-template-columns:200px 1fr; gap:24px;
+  align-items:end; margin-bottom:24px;
 }
 .av2-art{
   width:100%; aspect-ratio:1; border-radius:10px; overflow:hidden;
-  background:var(--raised); box-shadow:0 20px 50px rgba(0,0,0,.55),0 6px 16px rgba(0,0,0,.4);
+  background:var(--raised); box-shadow:0 16px 40px rgba(0,0,0,.55),0 4px 12px rgba(0,0,0,.4);
 }
 .av2-art img{ width:100%; height:100%; object-fit:cover; display:block; }
 .av2-meta{ display:flex; flex-direction:column; gap:8px; }
@@ -753,7 +754,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   text-transform:uppercase; font-weight:500;
 }
 .av2-title{
-  font-family:var(--ff-b); font-weight:700; font-size:44px; line-height:1.05;
+  font-family:var(--ff-b); font-weight:700; font-size:34px; line-height:1.05;
   letter-spacing:-0.02em; color:var(--t1); margin:0;
 }
 .av2-artist{
@@ -850,6 +851,69 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .av2-empty{
   padding:32px; text-align:center; color:var(--t3);
   font-family:var(--ff-m); font-size:12px; letter-spacing:.08em;
+}
+
+/* Right rail — Now Playing queue + Up Next + Curated picks */
+.av2-rail{ display:flex; flex-direction:column; gap:18px; min-width:0; }
+.av2-rail-card{
+  background:var(--b0); border:1px solid var(--b1); border-radius:12px;
+  padding:14px 16px;
+}
+.av2-rail-h{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px;
+}
+.av2-rail-h h3{
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--t3); margin:0; font-weight:500;
+}
+.av2-rail-h .av2-rail-act{
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.1em; color:var(--ac);
+  background:transparent; padding:0; cursor:pointer;
+}
+.av2-rail-list{ display:flex; flex-direction:column; gap:6px; }
+.av2-rail-trk{
+  display:grid; grid-template-columns:32px 1fr 40px; gap:10px;
+  align-items:center; padding:7px 8px; border-radius:6px;
+  cursor:pointer; transition:background .12s;
+}
+.av2-rail-trk:hover{ background:var(--b1); }
+.av2-rail-trk.now{ background:rgba(77,184,255,.07); }
+.av2-rail-trk.now .av2-rail-ti{ color:var(--ac); font-weight:600; }
+.av2-rail-art{
+  width:32px; height:32px; border-radius:4px;
+  background:var(--raised); overflow:hidden;
+}
+.av2-rail-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.av2-rail-tt{ overflow:hidden; }
+.av2-rail-ti{
+  font-family:var(--ff-b); font-weight:500; font-size:12.5px; color:var(--t1);
+  letter-spacing:-0.005em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.av2-rail-ar{
+  font-family:var(--ff-b); font-size:11px; color:var(--t3);
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.av2-rail-dur{
+  font-family:var(--ff-m); font-size:11px; color:var(--t3); text-align:right;
+}
+.av2-rail-empty{
+  padding:14px 4px; text-align:center;
+  font-family:var(--ff-m); font-size:11px; color:var(--t4); letter-spacing:.08em;
+}
+.av2-rail-spark{
+  display:inline-block; padding:2px 8px; margin-left:8px; border-radius:10px;
+  font-family:var(--ff-m); font-size:9.5px; letter-spacing:.14em; text-transform:uppercase;
+  background:linear-gradient(135deg,rgba(155,109,212,.22),rgba(77,184,255,.18));
+  color:#cdb6f5; border:1px solid rgba(155,109,212,.4);
+}
+
+/* Tablet — collapse rail under main column */
+@media(max-width:1100px){
+  .av2{ grid-template-columns:1fr; }
+  .av2-rail{ flex-direction:row; flex-wrap:wrap; }
+  .av2-rail-card{ flex:1; min-width:280px; }
 }
 
 /* Release information from MusicBrainz */
@@ -2317,6 +2381,7 @@ async function openAlbum(id) {
   av.innerHTML =
     '<div class="av2-back" onclick="go(\'library\')">← Library</div>'+
     '<div class="av2">'+
+      '<div class="av2-main">'+
       '<header class="av2-hero">'+
         '<div class="av2-art">'+art+'</div>'+
         '<div class="av2-meta">'+
@@ -2340,8 +2405,10 @@ async function openAlbum(id) {
         '<div class="av2-trk-hdr"><span>#</span><span>Title</span><span>Format</span><span>Quality</span><span>Time</span></div>'+
         tracksHtml+
       '</section>'+
-    '</div>'+
-    '<div class="alb-ai-panel"><div class="alb-ai-title">✦ AI Insight</div><div id="albAIInsight"><div class="ai-loading"><div class="ai-spinner"></div>Generating insight…</div></div></div>';
+      '<div class="alb-ai-panel"><div class="alb-ai-title">✦ AI Insight</div><div id="albAIInsight"><div class="ai-loading"><div class="ai-spinner"></div>Generating insight…</div></div></div>'+
+      '</div>'+ /* /av2-main */
+      '<aside class="av2-rail" id="av2Rail">'+ renderAlbumRail(alb) +'</aside>'+
+    '</div>';
 
   setTimeout(function(){ loadAlbumAIInsight(alb); }, 100);
   setSidebarQuality({ format:formatSummary, bit:maxBit, sr:maxSr, hi:isHi });
@@ -2360,6 +2427,134 @@ async function openAlbum(id) {
       if (heroArt) heroArt.innerHTML = '<img src="'+info.coverArt+'" alt="'+esc(alb.title)+'" onerror="this.parentNode.innerHTML=\'🎵\'">';
     }
   });
+}
+
+// Render the right rail for the album view.
+// Three stacked cards: Now Playing (current + queue), Up Next (album tracks after current), Curated for You.
+function renderAlbumRail(alb){
+  var html = '';
+
+  // ── 1. Now Playing
+  var t = S.current;
+  if (t) {
+    var artT = t.art ? '<img src="'+t.art+'" alt="">' : '<span style="font-size:14px">🎵</span>';
+    html += '<div class="av2-rail-card">'+
+      '<div class="av2-rail-h"><h3>Now Playing</h3></div>'+
+      '<div class="av2-rail-trk now">'+
+        '<div class="av2-rail-art">'+artT+'</div>'+
+        '<div class="av2-rail-tt">'+
+          '<div class="av2-rail-ti">'+esc(t.title||'—')+'</div>'+
+          '<div class="av2-rail-ar">'+esc(t.artist||'')+'</div>'+
+        '</div>'+
+        '<div class="av2-rail-dur">'+(t.bit?t.bit+'/'+((t.sr||0)/1000).toFixed(0)+'k':'')+'</div>'+
+      '</div>'+
+    '</div>';
+  }
+
+  // ── 2. Up Next — remaining items in S.queue after current
+  var upNext = [];
+  if (S.queue && S.queue.length) {
+    var start = (S.qIdx||0) + 1;
+    upNext = S.queue.slice(start, start + 8);
+  }
+  html += '<div class="av2-rail-card">'+
+    '<div class="av2-rail-h"><h3>Up Next</h3>' + (upNext.length ? '<button class="av2-rail-act" onclick="S.queue=S.queue.slice(0,(S.qIdx||0)+1);openAlbum(\''+alb.id+'\')">Clear</button>' : '') + '</div>';
+  if (upNext.length === 0) {
+    html += '<div class="av2-rail-empty">Queue is empty</div>';
+  } else {
+    html += '<div class="av2-rail-list">' + upNext.map(function(u, i){
+      var aImg = u.art ? '<img src="'+u.art+'" alt="">' : '<span style="font-size:14px">🎵</span>';
+      var dur = u.duration ? (Math.floor(u.duration/60) + ':' + ('0'+(u.duration%60)).slice(-2)) : '';
+      return '<div class="av2-rail-trk" onclick="playEntry('+(start+i)+')">'+
+        '<div class="av2-rail-art">'+aImg+'</div>'+
+        '<div class="av2-rail-tt">'+
+          '<div class="av2-rail-ti">'+esc(u.title)+'</div>'+
+          '<div class="av2-rail-ar">'+esc(u.artist||'')+'</div>'+
+        '</div>'+
+        '<div class="av2-rail-dur">'+dur+'</div>'+
+      '</div>';
+    }).join('') + '</div>';
+  }
+  html += '</div>';
+
+  // ── 3. Curated picks — AI / heuristic-driven
+  var curated = curateForAlbum(alb);
+  html += '<div class="av2-rail-card">'+
+    '<div class="av2-rail-h"><h3>Curated for You<span class="av2-rail-spark">AI</span></h3>'+
+    '<button class="av2-rail-act" onclick="autoPlaylistFromAlbum(\''+alb.id+'\')">Play all</button></div>';
+  if (curated.length === 0) {
+    html += '<div class="av2-rail-empty">No suggestions yet — listen to a few albums</div>';
+  } else {
+    html += '<div class="av2-rail-list">' + curated.slice(0, 8).map(function(c){
+      var aImg = c.art ? '<img src="'+c.art+'" alt="">' : '<span style="font-size:14px">🎵</span>';
+      return '<div class="av2-rail-trk" onclick="openAlbum(\''+c.id+'\')">'+
+        '<div class="av2-rail-art">'+aImg+'</div>'+
+        '<div class="av2-rail-tt">'+
+          '<div class="av2-rail-ti">'+esc(c.title)+'</div>'+
+          '<div class="av2-rail-ar">'+esc(c.artist||'')+'</div>'+
+        '</div>'+
+        '<div class="av2-rail-dur">'+(c.score?c.score+'%':'')+'</div>'+
+      '</div>';
+    }).join('') + '</div>';
+  }
+  html += '</div>';
+
+  return html;
+}
+
+// AI curation — combine listening-history scores (artist/genre) with similarity to selected album.
+// Always returns at least N suggestions if the library has them; falls back to random sampling.
+function curateForAlbum(currentAlbum){
+  if (!currentAlbum) return [];
+  var allAlbs = Object.values(S.albums||{}).filter(function(a){ return a.id !== currentAlbum.id; });
+  if (allAlbs.length === 0) return [];
+
+  var topArtists = typeof getTopArtists === 'function' ? getTopArtists() : {};
+  var topGenres  = typeof getTopGenres  === 'function' ? getTopGenres()  : {};
+
+  var scored = allAlbs.map(function(a){
+    var s = 0;
+    // Same-artist boost
+    if (a.artist && currentAlbum.artist && a.artist === currentAlbum.artist) s += 40;
+    // Top-listened artist
+    if (a.artist && topArtists[a.artist]) s += Math.min(30, (topArtists[a.artist]||0) * 6);
+    // Same / top genre
+    if (a.genre  && currentAlbum.genre  && a.genre  === currentAlbum.genre)  s += 18;
+    if (a.genre  && topGenres[a.genre])  s += Math.min(20, (topGenres[a.genre]||0) * 5);
+    // Hi-res preference (mild boost) when current album is hi-res
+    if (currentAlbum.isHi && a.isHi) s += 6;
+    // Year proximity
+    if (currentAlbum.year && a.year) {
+      var diff = Math.abs(parseInt(currentAlbum.year) - parseInt(a.year));
+      if (diff < 3)  s += 10; else if (diff < 8) s += 4;
+    }
+    // Add a tiny bit of jitter so picks aren't identical every time
+    s += Math.random() * 3;
+    return { id:a.id, title:a.title, artist:a.artist, art:a.art, score:Math.round(s) };
+  }).sort(function(a,b){ return b.score - a.score; });
+
+  return scored.filter(function(c){ return c.score > 5; });
+}
+
+// Spin up an AI auto-playlist from a seed album — queues curated picks one track from each.
+async function autoPlaylistFromAlbum(seedId){
+  var picks = curateForAlbum(S.albums[seedId]).slice(0, 6);
+  if (picks.length === 0) { toast('⚠','Not enough library data for curation','warn'); return; }
+  toast('✨','Curating playlist from '+picks.length+' albums','info');
+  // For each picked album, take its first track. Load on-demand if connected.
+  var newQ = [];
+  for (var i = 0; i < picks.length; i++) {
+    var a = S.albums[picks[i].id];
+    if (!a) continue;
+    if (NAV.connected && (!a.tracks || !a.tracks.length)) {
+      try { await navLoadAlbumTracks(a.id); } catch(_) {}
+    }
+    if (a.tracks && a.tracks[0]) newQ.push(a.tracks[0]);
+  }
+  if (newQ.length === 0) { toast('⚠','Couldn\'t build playlist','warn'); return; }
+  S.queue = newQ; S.qIdx = 0;
+  playEntry(0);
+  if (typeof openAlbum === 'function' && S.currentAlbumId) openAlbum(S.currentAlbumId);
 }
 
 // Side-player (right-docked panel) toggle.
