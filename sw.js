@@ -5,8 +5,8 @@
 // No app-bound domain restrictions
 // ═══════════════════════════════════════════════════
 
-const CACHE   = 'auralis-v3.1';
-const SHELL   = ['/', '/index.html', '/manifest.json'];
+const CACHE   = 'auralis-v3.2';
+const SHELL   = ['/manifest.json'];
 
 // ── INSTALL ───────────────────────────────────────
 self.addEventListener('install', e => {
@@ -42,14 +42,30 @@ self.addEventListener('fetch', e => {
   // Skip blob: URLs (local audio files)
   if (url.protocol === 'blob:') return;
 
-  // App shell: stale-while-revalidate
+  // HTML navigations: network-first (so deploys are visible immediately, no stale-cache trap).
+  // Other assets: cache-first.
+  const isHTML = req.mode === 'navigate' ||
+                 (req.headers.get('accept') || '').includes('text/html') ||
+                 url.pathname.endsWith('/') ||
+                 url.pathname.endsWith('.html');
+
+  if (isHTML) {
+    e.respondWith(
+      fetch(req)
+        .then(res => {
+          if (res.ok) caches.open(CACHE).then(c => c.put(req, res.clone()));
+          return res;
+        })
+        .catch(() => caches.match(req).then(c => c || new Response('Offline', { status: 503 })))
+    );
+    return;
+  }
+
   e.respondWith(
     caches.match(req).then(cached => {
       const fresh = fetch(req)
         .then(res => {
-          if (res.ok) {
-            caches.open(CACHE).then(c => c.put(req, res.clone()));
-          }
+          if (res.ok) caches.open(CACHE).then(c => c.put(req, res.clone()));
           return res;
         })
         .catch(() => cached || new Response('Offline', { status: 503 }));
