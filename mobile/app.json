@@ -1,0 +1,29 @@
+{
+  "expo": {
+    "name": "Auralis",
+    "slug": "auralis",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "scheme": "auralis",
+    "splash": {
+      "resizeMode": "contain",
+      "backgroundColor": "#0E141B"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.murfscv360.auralis",
+      "infoPlist": {
+        "UIBackgroundModes": ["audio"]
+      }
+    },
+    "android": {
+      "package": "com.murfscv360.auralis"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "plugins": ["expo-av"]
+  }
+}
