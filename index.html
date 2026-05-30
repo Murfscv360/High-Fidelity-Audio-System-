@@ -9,8 +9,9 @@
 <meta name="theme-color" content="#020508">
 <title>Auralis — Hi-Res Audio Library</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700&display=swap">
-<style>/* Auralis v3.1 — Styles */
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>/* Auralis v3.4 — single type system (Inter + JetBrains Mono), no serif, no italic */
 
 :root{
   /* Palette — vibrdrome-inspired: lifted slate canvas, sidebar darker for separation */
@@ -22,10 +23,15 @@
   --gold:#E8B33A;--goldd:rgba(232,179,58,.13);
   --green:#3ecf7a;--greend:rgba(62,207,122,.1);
   --red:#ff5f72;--redd:rgba(255,95,114,.1);
-  /* Typography — system stack first for clean native rendering; serif kept for display */
-  --ff-d:'Cormorant Garamond',Georgia,serif;
-  --ff-b:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI','Syne',Roboto,Helvetica,Arial,sans-serif;
-  --ff-m:'SF Mono','DM Mono',Menlo,Consolas,'Courier New',monospace;
+  /* Typography — one type system. Inter for everything, JetBrains Mono for data callouts.
+     System-stack fallback ensures clean rendering before web fonts load. No serif, no italic. */
+  --ff-b:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --ff-d:var(--ff-b);
+  --ff-m:'JetBrains Mono','SF Mono',Menlo,Consolas,'Courier New',monospace;
+  /* Letter-spacing scale — only three values, used semantically */
+  --tracking-tight:-0.01em;   /* large display headings */
+  --tracking-normal:0;        /* body text */
+  --tracking-wide:0.06em;     /* small-caps eyebrow labels (≤11px uppercase) */
   --r:8px;--r2:14px;--r3:20px;
   /* Layout — fluid widths that collapse on tablet/mobile via @media below */
   --nav:220px;--bar:60px;--ph:76px;
@@ -35,7 +41,7 @@
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:var(--ink)}
-body{font-family:var(--ff-b);color:var(--t1);-webkit-font-smoothing:antialiased}
+body{font-family:var(--ff-b);color:var(--t1);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-feature-settings:"ss01","cv11","cv02";letter-spacing:var(--tracking-normal);text-rendering:optimizeLegibility}
 button{font-family:inherit;cursor:pointer;border:none;background:none}
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:rgba(77,184,255,.2);border-radius:2px}
 
@@ -44,7 +50,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 /* ── ICON BAR ── */
 #iconbar{grid-row:1/3;background:#020810;border-right:1px solid var(--b1);display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:4px;z-index:20}
-.ib-logo{font-family:var(--ff-d);font-style:italic;font-size:18px;color:var(--ac);letter-spacing:.14em;padding:8px 0 16px;cursor:pointer}
+.ib-logo{font-family:var(--ff-b);font-weight:700;font-size:13px;color:var(--ac);letter-spacing:.18em;text-transform:uppercase;padding:8px 0 16px;cursor:pointer}
 .ib-btn{width:44px;height:44px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--t4);transition:background .15s,color .15s;position:relative}
 .ib-btn:hover{background:var(--acd);color:var(--ac)}
 .ib-btn.on{background:var(--acd);color:var(--ac)}
@@ -72,7 +78,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* ── MAIN ── */
 #main{display:flex;flex-direction:column;overflow:hidden;background:var(--deep);min-width:0}
 #topbar{height:52px;background:rgba(3,7,12,.96);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;backdrop-filter:blur(20px)}
-.tb-title{font-family:var(--ff-d);font-size:20px;font-weight:300;white-space:nowrap}
+.tb-title{font-family:var(--ff-d);font-size:20px;font-weight:600;white-space:nowrap}
 .tb-search{flex:1;max-width:340px;background:var(--b0);border:1px solid var(--b1);border-radius:var(--r);padding:7px 13px;font-family:var(--ff-m);font-size:12px;color:var(--t1);outline:none;transition:border-color .15s}
 .tb-search:focus{border-color:rgba(77,184,255,.3)}
 .tb-search::placeholder{color:var(--t4)}
@@ -100,7 +106,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .hero-info{flex:1;min-width:0}
 .hero-label{font-family:var(--ff-m);font-size:9px;letter-spacing:.2em;color:var(--ac);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .hero-dot{width:5px;height:5px;border-radius:50%;background:var(--ac);box-shadow:0 0 6px var(--ac);animation:pulse 2s ease-in-out infinite}
-.hero-title{font-family:var(--ff-d);font-size:36px;font-weight:300;line-height:1.1;margin-bottom:4px}
+.hero-title{font-family:var(--ff-d);font-size:36px;font-weight:600;line-height:1.1;margin-bottom:4px}
 .hero-artist{font-size:16px;color:var(--t2);margin-bottom:10px}
 .hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .tag{font-family:var(--ff-m);font-size:9px;letter-spacing:.08em;padding:4px 10px;border-radius:20px}
@@ -113,13 +119,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* ── STATS ── */
 .stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;padding:20px 24px;border-bottom:1px solid var(--b1)}
 .stat{background:var(--b0);border:1px solid var(--b1);border-radius:var(--r2);padding:14px;text-align:center}
-.stat-val{font-family:var(--ff-d);font-size:26px;font-weight:300;line-height:1;margin-bottom:3px}
-.stat-lbl{font-family:var(--ff-m);font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--t4)}
+.stat-val{font-family:var(--ff-d);font-size:26px;font-weight:600;line-height:1;margin-bottom:3px}
+.stat-lbl{font-family:var(--ff-m);font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--t4)}
 
 /* ── SECTION ── */
 .sec{padding:24px}
 .sec-hdr{display:flex;align-items:baseline;gap:12px;margin-bottom:16px}
-.sec-title{font-family:var(--ff-d);font-size:22px;font-weight:300}
+.sec-title{font-family:var(--ff-d);font-size:22px;font-weight:600}
 .sec-sub{font-size:12px;color:var(--t3)}
 .sec-link{font-size:12px;color:var(--ac);cursor:pointer;margin-left:auto}
 .sec-link:hover{opacity:.75}
@@ -154,7 +160,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .av-back{font-family:var(--ff-m);font-size:10px;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:16px;transition:color .15s}
 .av-back:hover{color:var(--t1)}
 .av-album-label{font-family:var(--ff-m);font-size:9px;letter-spacing:.2em;color:var(--ac);text-transform:uppercase;margin-bottom:8px}
-.av-title{font-family:var(--ff-d);font-size:38px;font-weight:300;line-height:1.1;margin-bottom:6px}
+.av-title{font-family:var(--ff-d);font-size:38px;font-weight:600;line-height:1.1;margin-bottom:6px}
 .av-artist{font-size:17px;color:var(--t2);margin-bottom:4px}
 .av-year{font-size:13px;color:var(--t3);margin-bottom:14px}
 .av-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
@@ -229,7 +235,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .imp-card{background:var(--panel);border:1px solid rgba(77,184,255,.2);border-radius:var(--r3);padding:32px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;position:relative;box-shadow:0 40px 80px rgba(0,0,0,.85)}
 .imp-close{position:absolute;top:14px;right:14px;width:30px;height:30px;border-radius:50%;background:var(--b1);border:1px solid var(--b2);color:var(--t2);font-size:16px;display:flex;align-items:center;justify-content:center}
 .imp-close:hover{background:var(--b2)}
-.imp-title{font-family:var(--ff-d);font-size:28px;font-weight:300;margin-bottom:6px}
+.imp-title{font-family:var(--ff-d);font-size:28px;font-weight:600;margin-bottom:6px}
 .imp-sub{font-size:13px;color:var(--t2);margin-bottom:24px;line-height:1.6}
 .drop-zone{border:2px dashed rgba(77,184,255,.25);border-radius:var(--r2);padding:36px 20px;text-align:center;cursor:pointer;background:var(--acg);transition:all .2s}
 .drop-zone:hover,.drop-zone.over{border-color:var(--ac);background:var(--acd)}
@@ -267,7 +273,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .fs-body{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%;padding:40px;gap:16px}
 .fs-art{width:220px;height:220px;border-radius:var(--r2);overflow:hidden;background:var(--raised);border:1px solid var(--b2);box-shadow:0 24px 60px rgba(0,0,0,.7);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:64px}
 .fs-art img{width:100%;height:100%;object-fit:cover}
-.fs-title{font-family:var(--ff-d);font-size:34px;font-weight:300;text-align:center;line-height:1.1}
+.fs-title{font-family:var(--ff-d);font-size:34px;font-weight:600;text-align:center;line-height:1.1}
 .fs-artist{font-size:16px;color:var(--t2);text-align:center}
 .fs-tags{display:flex;gap:8px}
 .fs-ctrls{display:flex;align-items:center;gap:20px;color:var(--t3);font-size:20px}
@@ -281,13 +287,13 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .fs-wv{width:100%;max-width:480px;height:48px}
 .fs-analytics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:480px}
 .fs-metric{background:var(--b0);border:1px solid var(--b1);border-radius:var(--r);padding:12px 8px;text-align:center}
-.fs-mval{font-family:var(--ff-d);font-size:22px;font-weight:300;margin-bottom:3px}
+.fs-mval{font-family:var(--ff-d);font-size:22px;font-weight:600;margin-bottom:3px}
 .fs-mlbl{font-family:var(--ff-m);font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--t4)}
 
 /* ── EMPTY ── */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 24px;text-align:center;gap:16px;height:100%}
 .empty-icon{font-size:52px}
-.empty-title{font-family:var(--ff-d);font-size:30px;font-weight:300}
+.empty-title{font-family:var(--ff-d);font-size:30px;font-weight:600}
 .empty-sub{font-size:14px;color:var(--t2);max-width:360px;line-height:1.7}
 .empty-btn{margin-top:8px;padding:13px 28px;border-radius:var(--r);background:var(--ac);color:#000;font-weight:700;font-size:14px;transition:opacity .15s}
 .empty-btn:hover{opacity:.85}
@@ -347,7 +353,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .ai-section { padding:24px; border-bottom:1px solid var(--b1); }
 .ai-section:last-child { border-bottom:none; }
 .ai-section-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.ai-section-title { font-family:var(--ff-d); font-size:20px; font-weight:300; display:flex; align-items:center; gap:8px; }
+.ai-section-title { font-family:var(--ff-d); font-size:20px; font-weight:600; display:flex; align-items:center; gap:8px; }
 .ai-section-sub { font-family:var(--ff-m); font-size:10px; color:var(--t3); }
 .ai-icon { font-size:16px; }
 .ai-refresh-btn { font-family:var(--ff-m); font-size:11px; color:var(--ac); background:var(--acd); border:1px solid rgba(77,184,255,.2); padding:5px 12px; border-radius:20px; cursor:pointer; transition:all .15s; }
@@ -399,7 +405,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* Stats */
 .ai-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:16px; }
 .ai-stat { background:var(--b0); border:1px solid var(--b1); border-radius:var(--r2); padding:12px; text-align:center; }
-.ai-stat-val { font-family:var(--ff-d); font-size:18px; font-weight:300; line-height:1; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ai-stat-val { font-family:var(--ff-d); font-size:18px; font-weight:600; line-height:1; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .ai-stat-lbl { font-family:var(--ff-m); font-size:8px; letter-spacing:.12em; text-transform:uppercase; color:var(--t4); }
 
 /* Artist chips */
@@ -504,7 +510,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   <nav id="iconbar">
     <div class="ib-logo">A</div>
     <button class="ib-btn on" data-nav="home"    onclick="go('home')"   >⌂<span class="ib-tip">Home</span></button>
-    <button class="ib-btn"    data-nav="library" onclick="go('library')">âŠž<span class="ib-tip">Library</span></button>
+    <button class="ib-btn"    data-nav="library" onclick="go('library')">⊞<span class="ib-tip">Library</span></button>
     <button class="ib-btn"    data-nav="artists" onclick="go('artists')">♪<span class="ib-tip">Artists</span></button>
     <div class="ib-sep"></div>
     <button class="ib-btn" onclick="openImport()">⊕<span class="ib-tip">Import Audio</span></button>
@@ -518,12 +524,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="sb-scroll">
       <div class="sb-lbl">Library</div>
       <div class="sb-item on" data-nav="home"    onclick="go('home')"   ><span class="sb-icon">⌂</span>Home</div>
-      <div class="sb-item"    data-nav="library" onclick="go('library')"><span class="sb-icon">âŠž</span>Library<span class="sb-count" id="libCount">0</span></div>
+      <div class="sb-item"    data-nav="library" onclick="go('library')"><span class="sb-icon">⊞</span>Library<span class="sb-count" id="libCount">0</span></div>
       <div class="sb-item"    data-nav="artists" onclick="go('artists')"><span class="sb-icon">♪</span>Artists</div>
       <div class="sb-lbl" style="margin-top:8px">Collection</div>
       <div class="sb-item" onclick="filterFmt('FLAC')"><span class="sb-icon">⬡</span>FLAC Hi-Res</div>
       <div class="sb-item" onclick="filterFmt('DSD')"><span class="sb-icon">◈</span>DSD</div>
-      <div class="sb-item" onclick="filterFmt('MQA')"><span class="sb-icon">â—‰</span>MQA</div>
+      <div class="sb-item" onclick="filterFmt('MQA')"><span class="sb-icon">◉</span>MQA</div>
       <div class="sb-sep" style="height:1px;background:var(--b1);margin:8px 12px"></div>
       <div class="sb-item" data-nav="ai" onclick="go('ai')" style="color:var(--ac)"><span class="sb-icon">✦</span>AI Recommendations</div>
       <div class="sb-item" onclick="openImport()"><span class="sb-icon">⊕</span>Import Audio</div>
@@ -544,7 +550,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   <main id="main">
     <div id="topbar">
       <div class="tb-title" id="pageTitle">Home</div>
-      <input class="tb-search" type="search" placeholder="âŒ•  Search albums, artists…" oninput="onSearch(this.value)" id="searchBox">
+      <input class="tb-search" type="search" placeholder="⌕  Search albums, artists…" oninput="onSearch(this.value)" id="searchBox">
       <div class="tb-right">
         <button class="tb-btn accent" id="navStatusBtn" onclick="NAV.connected?go('settings'):showConnectModal()">⚡ Navidrome</button>
       </div>
@@ -577,9 +583,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="pb-center">
       <div class="pb-ctrls">
         <button class="pb-ctrl" id="shuffleBtn" onclick="toggleShuffle()" title="Shuffle">⇄</button>
-        <button class="pb-ctrl" onclick="skipPrev()" title="Previous">â®</button>
+        <button class="pb-ctrl" onclick="skipPrev()" title="Previous">⏮</button>
         <button class="pb-play" id="playBtn" onclick="togglePlay()">▶</button>
-        <button class="pb-ctrl" onclick="skipNext()" title="Next">â­</button>
+        <button class="pb-ctrl" onclick="skipNext()" title="Next">⏭</button>
         <button class="pb-ctrl" id="repeatBtn" onclick="toggleRepeat()" title="Repeat">←»</button>
       </div>
       <div class="pb-prog">
@@ -597,7 +603,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
           <div class="pb-vol-fill" id="volFill" style="width:80%"></div>
         </div>
       </div>
-      <button class="pb-ctrl" onclick="openFs()" title="Fullscreen">â›¶</button>
+      <button class="pb-ctrl" onclick="openFs()" title="Fullscreen">⛶</button>
     </div>
   </div>
 </div>
@@ -605,7 +611,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <!-- IMPORT MODAL -->
 <div id="import-modal">
   <div class="imp-card">
-    <button class="imp-close" onclick="closeImport()">âœ•</button>
+    <button class="imp-close" onclick="closeImport()">✕</button>
     <div class="imp-title">Import Audio Library</div>
     <div class="imp-sub">Supports FLAC, DSD, MQA, WAV, AIFF, ALAC, MP3. Metadata is read from ID3 tags automatically.</div>
     <div class="drop-zone" id="dropZone">
@@ -643,7 +649,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <div id="fullscreen">
   <div class="fs-bg" id="fsBg"></div>
   <div class="fs-ov"></div>
-  <button class="fs-close" onclick="closeFs()">âœ•</button>
+  <button class="fs-close" onclick="closeFs()">✕</button>
   <div class="fs-body">
     <div class="fs-art" id="fsArt">ðŸŽµ</div>
     <div class="fs-title"  id="fsTitle">—</div>
@@ -651,9 +657,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
     <div class="fs-tags"   id="fsTags"></div>
     <canvas class="fs-wv" id="fs-wv-canvas"></canvas>
     <div class="fs-ctrls">
-      <button class="fs-ctrl" onclick="skipPrev()">â®</button>
+      <button class="fs-ctrl" onclick="skipPrev()">⏮</button>
       <button class="fs-play" id="fsPlay" onclick="togglePlay()">▶</button>
-      <button class="fs-ctrl" onclick="skipNext()">â­</button>
+      <button class="fs-ctrl" onclick="skipNext()">⏭</button>
     </div>
     <div class="fs-prog">
       <span id="fsCur">0:00</span>
@@ -667,7 +673,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 <!-- MOBILE -->
 <nav id="mob-nav">
   <button class="mob-btn on" data-nav="home"    onclick="go('home')"   ><span class="mob-icon">⌂</span>Home</button>
-  <button class="mob-btn"    data-nav="library" onclick="go('library')"><span class="mob-icon">âŠž</span>Library</button>
+  <button class="mob-btn"    data-nav="library" onclick="go('library')"><span class="mob-icon">⊞</span>Library</button>
   <button class="mob-btn"    data-nav="ai"      onclick="go('ai')"   ><span class="mob-icon">✦</span>AI</button>
   <button class="mob-btn"                       onclick="openImport()" ><span class="mob-icon">⊕</span>Import</button>
   <button class="mob-btn"    data-nav="artists" onclick="go('artists')"><span class="mob-icon">♪</span>Artists</button>
@@ -685,29 +691,61 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 
 <!-- CONNECT MODAL — shown when no server credentials saved -->
 <div id="connect-modal" style="display:flex;position:fixed;inset:0;z-index:1000;background:rgba(2,5,8,.97);backdrop-filter:blur(20px);align-items:center;justify-content:center;padding:20px">
-  <div style="background:#0d1a27;border:1px solid rgba(77,184,255,.25);border-radius:20px;padding:36px;max-width:420px;width:100%;box-shadow:0 40px 80px rgba(0,0,0,.9)">
-    <div style="text-align:center;margin-bottom:28px">
-      <div style="font-family:Georgia,serif;font-style:italic;font-size:36px;color:#4db8ff;letter-spacing:.2em;margin-bottom:6px">auralis</div>
-      <div style="font-family:monospace;font-size:10px;color:rgba(238,242,247,.3);letter-spacing:.2em">HI-RES AUDIO LIBRARY</div>
+  <div class="cnx-card">
+    <div class="cnx-brand">
+      <div class="cnx-wordmark">AURALIS</div>
+      <div class="cnx-tagline">Hi-res audio library</div>
     </div>
-    <div style="font-size:14px;font-weight:600;color:#eef2f7;margin-bottom:6px">Connect to your library</div>
-    <div style="font-size:13px;color:rgba(238,242,247,.55);margin-bottom:22px;line-height:1.65">Your Hi-Res library streams from your QNAP via Navidrome. Enter your credentials to connect.</div>
-    <div style="margin-bottom:14px">
-      <div style="font-family:monospace;font-size:9px;letter-spacing:.14em;color:rgba(238,242,247,.8);margin-bottom:6px">USERNAME</div>
-      <input id="cnxUser" type="text" autocomplete="username" placeholder="Navidrome username" style="width:100%;background:#1a2a3a;border:2px solid rgba(77,184,255,.4);border-radius:8px;padding:13px 14px;font-size:15px;color:#ffffff;outline:none;font-family:system-ui;-webkit-appearance:none">
-    </div>
-    <div style="margin-bottom:22px">
-      <div style="font-family:monospace;font-size:9px;letter-spacing:.14em;color:rgba(238,242,247,.8);margin-bottom:6px">PASSWORD</div>
-      <input id="cnxPass" type="password" autocomplete="current-password" placeholder="Navidrome password" style="width:100%;background:#1a2a3a;border:2px solid rgba(77,184,255,.4);border-radius:8px;padding:13px 14px;font-size:15px;color:#ffffff;outline:none;font-family:system-ui;-webkit-appearance:none">
-    </div>
-    <button onclick="connectNow()" id="cnxBtn" style="width:100%;padding:13px;background:#4db8ff;color:#020508;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;transition:opacity .15s">Connect to Library →</button>
-    <div id="cnxErr" style="margin-top:10px;font-family:monospace;font-size:11px;color:#ff5f72;text-align:center;display:none"></div>
-    <div style="margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);font-family:monospace;font-size:9px;color:rgba(238,242,247,.2);text-align:center;line-height:1.8">
-      programmes-financing-brokers-continuity.trycloudflare.com<br>
-      Credentials stored locally · Never shared
-    </div>
+    <div class="cnx-title">Connect to your library</div>
+    <div class="cnx-sub">Enter your Navidrome credentials. Your audio streams from your QNAP — nothing is uploaded.</div>
+    <label class="cnx-field">
+      <span class="cnx-label">Username</span>
+      <input id="cnxUser" class="cnx-input" type="text" autocomplete="username" placeholder="Navidrome username">
+    </label>
+    <label class="cnx-field">
+      <span class="cnx-label">Password</span>
+      <input id="cnxPass" class="cnx-input" type="password" autocomplete="current-password" placeholder="Navidrome password">
+    </label>
+    <button onclick="connectNow()" id="cnxBtn" class="cnx-btn">Connect to library</button>
+    <div id="cnxErr" class="cnx-err"></div>
+    <div class="cnx-foot">Credentials stored locally • Never shared</div>
   </div>
 </div>
+<style>
+/* Connect modal — vibrdrome-style minimal */
+#connect-modal{ backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); background:rgba(11,17,24,.72)!important; }
+.cnx-card{
+  background:var(--panel); border:1px solid var(--b1); border-radius:16px;
+  padding:32px 28px; max-width:400px; width:100%;
+  box-shadow:0 30px 60px rgba(0,0,0,.55),0 6px 18px rgba(0,0,0,.35);
+}
+.cnx-brand{ text-align:center; margin-bottom:28px; }
+.cnx-wordmark{ font-family:var(--ff-b); font-weight:700; font-size:22px; color:var(--t1); letter-spacing:.24em; text-transform:uppercase; margin-bottom:5px; }
+.cnx-tagline{ font-family:var(--ff-m); font-size:10px; color:var(--t3); letter-spacing:.16em; text-transform:uppercase; }
+.cnx-title{ font-size:17px; font-weight:600; color:var(--t1); margin-bottom:6px; letter-spacing:-0.01em; }
+.cnx-sub{ font-size:13.5px; color:var(--t2); margin-bottom:22px; line-height:1.55; }
+.cnx-field{ display:block; margin-bottom:14px; }
+.cnx-label{ display:block; font-family:var(--ff-m); font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--t3); margin-bottom:6px; }
+.cnx-input{
+  width:100%; background:var(--b0); border:1px solid var(--b2); border-radius:8px;
+  padding:12px 14px; font-size:14.5px; color:var(--t1); outline:none;
+  font-family:var(--ff-b); transition:border-color .15s,background .15s;
+  -webkit-appearance:none;
+}
+.cnx-input:focus{ border-color:var(--ac); background:rgba(77,184,255,.04); }
+.cnx-input::placeholder{ color:var(--t3); }
+.cnx-btn{
+  width:100%; margin-top:8px; padding:13px 16px;
+  background:var(--ac); color:#0E141B; border:none; border-radius:8px;
+  font-size:14px; font-weight:600; letter-spacing:.01em; cursor:pointer;
+  transition:opacity .15s,transform .1s;
+}
+.cnx-btn:hover{ opacity:.92; }
+.cnx-btn:active{ transform:translateY(1px); }
+.cnx-btn:disabled{ opacity:.55; cursor:default; }
+.cnx-err{ display:none; margin-top:10px; font-family:var(--ff-m); font-size:12px; color:var(--red); text-align:center; }
+.cnx-foot{ margin-top:20px; padding-top:14px; border-top:1px solid var(--b1); font-family:var(--ff-m); font-size:10px; color:var(--t4); letter-spacing:.08em; text-align:center; }
+</style>
 
 <script>// Auralis v3.1 — Application
 
@@ -845,7 +883,7 @@ function initWebAudio() {
   } catch(e) { AC = null; }
 }
 
-AUD.addEventListener('play',        function(){ setIcons('â¸'); S.playing=true; startWaveform(); refreshTrackHighlight(); });
+AUD.addEventListener('play',        function(){ setIcons('⏸'); S.playing=true; startWaveform(); refreshTrackHighlight(); });
 AUD.addEventListener('pause',       function(){ setIcons('▶');  S.playing=false; stopWaveform(); });
 AUD.addEventListener('ended',       onEnded);
 AUD.addEventListener('timeupdate',  onTime);
@@ -1506,7 +1544,7 @@ function renderSettings() {
   var albs=Object.values(S.albums);
   var apiKey = getAPIKey ? getAPIKey() : '';
   return '<div style="max-width:540px">'+
-    '<div class="ai-section-title" style="margin-bottom:16px;font-family:var(--ff-d);font-size:22px;font-weight:300">✦ AI Settings</div>'+
+    '<div class="ai-section-title" style="margin-bottom:16px;font-family:var(--ff-d);font-size:22px;font-weight:600">✦ AI Settings</div>'+
     '<div style="background:var(--acd);border:1px solid rgba(77,184,255,.2);border-radius:var(--r2);padding:16px;margin-bottom:24px">'+
       '<div style="font-size:13px;color:var(--t2);margin-bottom:8px;line-height:1.6">Add your Anthropic API key to unlock AI daily briefs, mood recommendations, album insights, and artist profiles. Your key is stored locally in this browser only.</div>'+
       '<div class="api-key-row">'+
@@ -1627,8 +1665,8 @@ function openAlbum(id) {
             ringHtml+
             '<div class="av-ring-info">'+
               'Dynamic Range <span>'+(isHi?'DR12':'DR8')+'</span><br>'+
-              'Signal/Noise <span>'+(isHi?'âˆ’96 dB':'âˆ’80 dB')+'</span><br>'+
-              'Loudness <span>'+(isHi?'âˆ’14 LUFS':'âˆ’10 LUFS')+'</span>'+
+              'Signal/Noise <span>'+(isHi?'−96 dB':'−80 dB')+'</span><br>'+
+              'Loudness <span>'+(isHi?'−14 LUFS':'−10 LUFS')+'</span>'+
             '</div>'+
           '</div>'+
         '</div>'+
@@ -2249,7 +2287,7 @@ function renderAIHub() {
 
     // ── Smart Picks for current mood
     (recAlbs.length?'<div class="ai-section">'+
-      '<div class="ai-section-hdr"><div class="ai-section-title"><span class="ai-icon">â­</span> Picked for You</div><div class="ai-section-sub">Based on your habits</div></div>'+
+      '<div class="ai-section-hdr"><div class="ai-section-title"><span class="ai-icon">⏭</span> Picked for You</div><div class="ai-section-sub">Based on your habits</div></div>'+
       '<div class="ai-grid">'+recAlbs.map(aiAlbCard).join('')+'</div>'+
     '</div>':'')+
 
@@ -2363,7 +2401,7 @@ async function showArtistAI(artist) {
   document.getElementById('page').innerHTML =
     '<div class="page-inner">'+
       '<div class="av-back" onclick="go(\'ai\')" style="margin-bottom:16px;cursor:pointer;font-family:var(--ff-m);font-size:10px;color:var(--t3);display:flex;align-items:center;gap:6px">← AI Hub</div>'+
-      '<div class="ai-section-title" style="margin-bottom:16px;font-family:var(--ff-d);font-size:28px;font-weight:300">'+esc(artist)+'</div>'+
+      '<div class="ai-section-title" style="margin-bottom:16px;font-family:var(--ff-d);font-size:28px;font-weight:600">'+esc(artist)+'</div>'+
       '<div class="ai-brief-card" id="artistAIText">'+
         '<div class="ai-loading"><div class="ai-spinner"></div>Getting artist insight…</div>'+
       '</div>'+
@@ -2719,8 +2757,8 @@ function renderConnect() {
   var saved = NAV.user ? true : false;
   return '<div style="max-width:420px;margin:60px auto;padding:0 20px">'+
     '<div style="text-align:center;margin-bottom:32px">'+
-      '<div style="font-family:var(--ff-d);font-size:40px;font-weight:300;color:var(--ac);letter-spacing:.2em;margin-bottom:6px">auralis</div>'+
-      '<div style="font-family:var(--ff-m);font-size:11px;color:var(--t3);letter-spacing:.16em">HI-RES AUDIO LIBRARY</div>'+
+      '<div style="font-family:var(--ff-b);font-weight:700;font-size:28px;color:var(--ac);letter-spacing:.22em;text-transform:uppercase;margin-bottom:6px">AURALIS</div>'+
+      '<div style="font-family:var(--ff-m);font-size:11px;color:var(--t3);letter-spacing:.08em">HI-RES AUDIO LIBRARY</div>'+
     '</div>'+
     '<div style="background:var(--panel);border:1px solid var(--b2);border-radius:var(--r3);padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.6)">'+
       '<div style="font-size:15px;font-weight:600;margin-bottom:6px">Connect to your library</div>'+
