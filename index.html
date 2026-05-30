@@ -33,8 +33,8 @@
   --tracking-normal:0;        /* body text */
   --tracking-wide:0.06em;     /* small-caps eyebrow labels (≤11px uppercase) */
   --r:8px;--r2:14px;--r3:20px;
-  /* Layout — fluid widths that collapse on tablet/mobile via @media below */
-  --nav:220px;--bar:60px;--ph:76px;
+  /* Layout — fluid sidebar / iconbar widths that adapt to viewport */
+  --nav:clamp(200px,16vw,260px); --bar:clamp(52px,4.5vw,60px); --ph:clamp(72px,7vh,80px);
   /* Soft elevations for album art (vibrdrome-style) */
   --art-shadow:0 4px 12px rgba(0,0,0,.45),0 2px 4px rgba(0,0,0,.3);
   --art-shadow-hover:0 10px 28px rgba(0,0,0,.55),0 4px 8px rgba(0,0,0,.4);
@@ -106,7 +106,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 .hero-info{flex:1;min-width:0}
 .hero-label{font-family:var(--ff-m);font-size:9px;letter-spacing:.2em;color:var(--ac);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .hero-dot{width:5px;height:5px;border-radius:50%;background:var(--ac);box-shadow:0 0 6px var(--ac);animation:pulse 2s ease-in-out infinite}
-.hero-title{font-family:var(--ff-d);font-size:36px;font-weight:600;line-height:1.1;margin-bottom:4px}
+.hero-title{font-family:var(--ff-d);font-size:clamp(24px,3vw,40px);font-weight:700;line-height:1.05;margin-bottom:4px;letter-spacing:-0.02em}
 .hero-artist{font-size:16px;color:var(--t2);margin-bottom:10px}
 .hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
 .tag{font-family:var(--ff-m);font-size:9px;letter-spacing:.08em;padding:4px 10px;border-radius:20px}
@@ -437,12 +437,9 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
    RESPONSIVE — tablet, narrow phone, fluid type
    ────────────────────────────────────────────────────────── */
 
-/* Sidebar narrows on tablet — full nav still readable */
+/* Sidebar narrows on tablet — handled by --nav clamp now; keep hero scaling tight */
 @media(max-width:1024px) and (min-width:769px){
-  :root{ --nav:184px; }
-  .tb-title{ font-size:18px; }
-  .tb-search{ max-width:280px; }
-  .hero-title{ font-size:30px; }
+  .hero-title{ font-size:clamp(24px,4vw,32px); }
 }
 
 /* Phone — additional polish on top of the existing 768 block */
@@ -554,7 +551,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 /* ══════════════════════════════════════════════════════════
    APPLE / TIDAL SIDEBAR + COVER-FORWARD LIBRARY GRID
    ══════════════════════════════════════════════════════════ */
-:root{ --nav:248px; }
+/* Sidebar size lives in the main :root token above — clamp(200, 16vw, 260). No override here. */
 #sidebar{ background:var(--sidebar-bg); padding:0; }
 .sb-brand{
   display:flex; align-items:center; gap:12px; padding:22px 22px 18px;
@@ -595,11 +592,12 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   color:var(--t4); text-transform:uppercase;
 }
 
-/* Larger covers, less text noise — Tidal-style */
+/* Larger covers, less text noise — Tidal-style, fully fluid columns */
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
-  gap:24px; padding:24px 28px;
+  grid-template-columns:repeat(auto-fill,minmax(clamp(140px,14vw,210px),1fr));
+  gap:clamp(14px,1.8vw,28px);
+  padding:clamp(16px,2vw,28px) clamp(18px,3vw,32px);
 }
 .alb-card{ cursor:pointer; transition:transform .2s; }
 .alb-card:hover{ transform:translateY(-2px); }
@@ -630,9 +628,10 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
 }
 .alb-meta-info{ display:none; }
 
-/* Top bar polish */
-#topbar{ height:64px; padding:0 28px; }
-.tb-title{ font-family:var(--ff-b); font-weight:700; font-size:22px; letter-spacing:-0.01em; }
+/* Top bar polish — fluid padding */
+#topbar{ height:clamp(56px,5vw,68px); padding:0 clamp(16px,2.4vw,30px); }
+.tb-title{ font-family:var(--ff-b); font-weight:700; font-size:clamp(18px,1.6vw,22px); letter-spacing:-0.01em; }
+.tb-search{ max-width:clamp(220px,28vw,420px); }
 
 /* Mobile recalibration on top of all of the above */
 @media(max-width:768px){
@@ -906,12 +905,19 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   cursor:pointer; transition:background .15s,color .15s;
 }
 .av2-back:hover{ background:var(--b1); color:var(--t1); }
-/* Tidal-style — album view: tracks given primary width, rail only on very wide screens */
-.av2{ padding:32px 40px 60px; max-width:1600px; margin:0 auto; display:grid; grid-template-columns:1fr 320px; gap:36px; }
+/* Tidal-style — album view: fluid widths driven by viewport */
+.av2{
+  padding:clamp(18px,2.5vw,40px) clamp(18px,3vw,48px) 60px;
+  max-width:1720px; margin:0 auto;
+  display:grid; grid-template-columns:1fr clamp(260px,22vw,340px);
+  gap:clamp(18px,2.5vw,36px);
+}
 .av2-main{ min-width:0; }
 .av2-hero{
-  display:grid; grid-template-columns:300px 1fr; gap:36px;
-  align-items:end; margin-bottom:32px;
+  display:grid;
+  grid-template-columns:clamp(180px,22vw,320px) 1fr;
+  gap:clamp(18px,3vw,36px);
+  align-items:end; margin-bottom:clamp(20px,3vw,36px);
 }
 .av2-art{
   width:100%; aspect-ratio:1; border-radius:10px; overflow:hidden;
@@ -924,11 +930,15 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   text-transform:uppercase; font-weight:500;
 }
 .av2-title{
-  font-family:var(--ff-b); font-weight:800; font-size:48px; line-height:1;
+  font-family:var(--ff-b); font-weight:800;
+  font-size:clamp(28px,3.6vw,52px); line-height:1.02;
   letter-spacing:-0.03em; color:var(--t1); margin:0;
+  /* prevent overflow on long titles */
+  overflow-wrap:break-word; hyphens:auto;
 }
 .av2-artist{
-  font-family:var(--ff-b); font-weight:600; font-size:18px; color:var(--t1);
+  font-family:var(--ff-b); font-weight:600;
+  font-size:clamp(15px,1.3vw,18px); color:var(--t1);
   letter-spacing:-0.005em; margin-top:4px;
 }
 .av2-facts{
@@ -1090,11 +1100,16 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   color:#cdb6f5; border:1px solid rgba(155,109,212,.4);
 }
 
-/* Tablet & narrow desktop — hide rail entirely so tracks get full width.
-   Rail re-appears on wide screens (>= 1280px) where there's room for both. */
-@media(max-width:1279px){
+/* Rail visible only at ≥1340px — below that, tracks get full main column.
+   Track list adapts to fewer columns automatically since it's a flex/grid. */
+@media(max-width:1339px){
   .av2{ grid-template-columns:1fr; }
   .av2-rail{ display:none; }
+}
+/* Ultra-wide screens: cap content max-width but allow side breathing room */
+@media(min-width:2200px){
+  .av2{ max-width:1900px; }
+  .grid{ grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); }
 }
 
 /* Release information from MusicBrainz */
@@ -4066,6 +4081,8 @@ async function navLoadLibrary() {
     if (list.length < size) break;
   }
 
+  // Clean library — remove dupes, incomplete records, garbage metadata (user request).
+  cleanLibrary();
   var albCount = Object.keys(S.albums).length;
   document.getElementById('libCount').textContent = albCount;
   document.getElementById('dbSub').textContent = albCount + ' albums · Navidrome';
@@ -4073,6 +4090,50 @@ async function navLoadLibrary() {
 
   render();
   toast('✓', albCount + ' albums loaded', 'success');
+}
+
+// Library-data cleaner — runs after every library load.
+// Drops: blank/generic titles ("Track 01", "Untitled", numeric-only), blank/"Unknown Artist",
+//        deduplicates by normalised (title, artist) tuple keeping the record with more tracks/art/metadata.
+function cleanLibrary(){
+  var before = Object.keys(S.albums).length;
+  var byKey = {};
+  var drops = { incomplete:0, badArtist:0, badTitle:0, dupe:0 };
+  function norm(s){ return String(s||'').toLowerCase().replace(/[\s\-_·]+/g,' ').replace(/\(.*?\)|\[.*?\]/g,'').trim(); }
+  function looksGeneric(title){
+    var t = String(title||'').trim().toLowerCase();
+    return !t || /^(track\s*\d+|untitled|unknown|cd\s*\d*|disc\s*\d+|\d+)$/i.test(t);
+  }
+  function badArtist(a){
+    var n = String(a||'').trim().toLowerCase();
+    return !n || n === 'unknown artist' || n === 'unknown';
+  }
+  function score(alb){
+    return (alb.tracks ? alb.tracks.length : 0) * 10
+         + (alb.art ? 50 : 0)
+         + (alb.year ? 5 : 0)
+         + (alb.genre ? 3 : 0)
+         + (alb.description ? 8 : 0);
+  }
+  Object.values(S.albums).forEach(function(alb){
+    if (!alb || !alb.id) return;
+    if (looksGeneric(alb.title)) { drops.badTitle++; delete S.albums[alb.id]; return; }
+    if (badArtist(alb.artist))   { drops.badArtist++; delete S.albums[alb.id]; return; }
+    var key = norm(alb.title) + '|' + norm(alb.artist);
+    if (!byKey[key]) { byKey[key] = alb; return; }
+    // Duplicate — keep the higher-scored one.
+    if (score(alb) > score(byKey[key])) {
+      delete S.albums[byKey[key].id];
+      byKey[key] = alb;
+    } else {
+      delete S.albums[alb.id];
+    }
+    drops.dupe++;
+  });
+  var after = Object.keys(S.albums).length;
+  if (before !== after) {
+    console.log('[cleanLibrary] '+before+' → '+after+' albums (dropped: '+JSON.stringify(drops)+')');
+  }
 }
 
 async function navLoadAlbumTracks(albId) {
