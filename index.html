@@ -769,6 +769,88 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:144px;
 }
 
+/* ══════════════════════════════════════════════════════════
+   MOBILE ALBUM VIEW (Tidal-style)
+   ══════════════════════════════════════════════════════════ */
+.mob-alb{ padding:8px 18px 120px; position:relative; }
+.mob-alb-back{
+  position:absolute; top:6px; left:8px; z-index:5;
+  width:42px; height:42px; border-radius:50%;
+  background:rgba(11,17,24,.6); color:var(--t1); font-size:22px;
+  display:flex; align-items:center; justify-content:center;
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  border:1px solid var(--b1);
+}
+.mob-alb-art{
+  width:100%; aspect-ratio:1; max-width:340px; margin:18px auto 22px;
+  border-radius:14px; overflow:hidden; background:var(--raised);
+  box-shadow:0 20px 50px rgba(0,0,0,.6),0 6px 16px rgba(0,0,0,.4);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; transition:transform .15s;
+}
+.mob-alb-art:active{ transform:scale(.98); }
+.mob-alb-art img{ width:100%; height:100%; object-fit:cover; display:block; }
+.mob-alb-eyebrow{
+  font-family:var(--ff-m); font-size:10.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ac); text-align:center; margin-bottom:6px;
+}
+.mob-alb-title{
+  font-family:var(--ff-b); font-weight:800; font-size:26px; line-height:1.05;
+  letter-spacing:-0.02em; color:var(--t1);
+  text-align:center; margin:0 0 6px;
+}
+.mob-alb-artist{
+  font-family:var(--ff-b); font-weight:600; font-size:15px; color:var(--t2);
+  text-align:center; margin-bottom:14px;
+}
+.mob-alb-specs{
+  display:flex; flex-wrap:wrap; gap:6px; justify-content:center; margin-bottom:18px;
+}
+.mob-alb-spec{
+  display:inline-block; padding:4px 10px;
+  font-family:var(--ff-m); font-size:10px; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--t2);
+  background:var(--b0); border:1px solid var(--b1); border-radius:12px;
+}
+.mob-alb-spec.hi{ background:rgba(232,179,58,.12); border-color:rgba(232,179,58,.35); color:var(--gold); }
+.mob-alb-actions{ display:flex; gap:10px; justify-content:center; margin-bottom:14px; }
+.mob-alb-play{
+  flex:1; max-width:260px; padding:13px 18px; border-radius:32px;
+  background:var(--t1); color:#0E141B; border:none;
+  font-family:var(--ff-b); font-weight:700; font-size:14.5px;
+  cursor:pointer;
+}
+.mob-alb-shuf{
+  width:48px; height:48px; border-radius:50%;
+  background:transparent; color:var(--t1); border:1.5px solid var(--b3);
+  font-size:18px;
+}
+.mob-alb-stats{
+  text-align:center; margin-bottom:20px;
+  font-family:var(--ff-m); font-size:11px; letter-spacing:.08em; color:var(--t3);
+}
+.mob-alb-tracks{ display:flex; flex-direction:column; gap:2px; }
+.mob-alb-trk{
+  display:grid; grid-template-columns:28px 1fr 50px; gap:12px; align-items:center;
+  padding:11px 8px; border-radius:6px; cursor:pointer; transition:background .12s;
+}
+.mob-alb-trk:active{ background:var(--b1); }
+.mob-alb-trk.playing{ background:rgba(77,184,255,.08); }
+.mob-alb-trk.playing .mob-alb-trk-ti{ color:var(--ac); font-weight:600; }
+.mob-alb-trk-n{ font-family:var(--ff-m); font-size:13px; color:var(--t3); text-align:center; }
+.mob-alb-trk-tt{ overflow:hidden; min-width:0; }
+.mob-alb-trk-ti{
+  font-family:var(--ff-b); font-weight:500; font-size:14.5px; color:var(--t1);
+  letter-spacing:-0.005em;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mob-alb-trk-by{
+  font-family:var(--ff-b); font-size:12px; color:var(--t3); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.mob-alb-trk-dur{ font-family:var(--ff-m); font-size:12px; color:var(--t3); text-align:right; }
+.mob-alb-empty{ padding:32px; text-align:center; color:var(--t3); font-family:var(--ff-m); font-size:12px; letter-spacing:.06em; }
+
 /* Sidebar — drop leading icons entirely (Apple/Tidal style is text-only) */
 #sidebar .sb-item .sb-icon{ display:none!important; }
 #sidebar .sb-item{ padding-left:26px; }
@@ -2433,6 +2515,21 @@ async function openAlbum(id) {
   S.currentAlbumId = id;
   showPage(false);
 
+  // Mobile uses a totally separate layout (full-bleed art hero + transport + tracks).
+  if (window.matchMedia('(max-width: 768px)').matches) {
+    if (NAV.connected && (!alb.tracks || !alb.tracks.length)) {
+      try { await navLoadAlbumTracks(id); } catch(_){}
+    }
+    // Dedupe
+    var seen = {};
+    alb.tracks = (alb.tracks||[]).filter(function(t){
+      var k=(t.trackNum||0)+'::'+(t.title||'').trim().toLowerCase();
+      if (seen[k]) return false; seen[k]=1; return true;
+    });
+    renderMobileAlbum(alb);
+    return;
+  }
+
   // Lazy-load Navidrome tracks (audit fix H-05 — previously album track lists were empty until Play).
   if (NAV.connected && (!alb.tracks || alb.tracks.length === 0)) {
     var av = document.getElementById('album-view');
@@ -2541,6 +2638,62 @@ async function openAlbum(id) {
       if (heroArt) heroArt.innerHTML = '<img src="'+info.coverArt+'" alt="'+esc(alb.title)+'" onerror="this.parentNode.innerHTML=\'🎵\'">';
     }
   });
+}
+
+// ════════════════════════════════════════════════════════
+// MOBILE-NATIVE VIEWS — Tidal-inspired, no desktop fallback.
+// ════════════════════════════════════════════════════════
+
+// Mobile album detail — full-bleed art, big title, transport, tracks.
+function renderMobileAlbum(alb) {
+  function fmtDur(s){ if(!s||isNaN(s))return ''; var m=Math.floor(s/60),x=Math.floor(s%60); return m+':'+(x<10?'0':'')+x; }
+  var maxBit = 16, maxSr = 44100, formats = {}, totalSec = 0;
+  (alb.tracks||[]).forEach(function(t){
+    totalSec += (t.duration||0);
+    if (t.bit && t.bit > maxBit) maxBit = t.bit;
+    if (t.sr  && t.sr  > maxSr)  maxSr  = t.sr;
+    if (t.ext) formats[t.ext.toUpperCase()] = 1;
+  });
+  var fmt = Object.keys(formats).join(' · ') || alb.format || 'FLAC';
+  var srLabel = (maxSr/1000).toFixed(maxSr%1000?1:0)+' kHz';
+  var isHi = maxBit >= 24 || maxSr >= 48000;
+  var hh = Math.floor(totalSec/3600), mm = Math.floor((totalSec%3600)/60);
+  var runtime = (hh?hh+'h ':'')+mm+'m';
+
+  var art = alb.art ? '<img src="'+alb.art+'" alt="'+esc(alb.title)+'">' : '<span style="font-size:48px">🎵</span>';
+  var tracksHtml = (alb.tracks||[]).length === 0
+    ? '<div class="mob-alb-empty">No tracks loaded</div>'
+    : (alb.tracks||[]).map(function(t, i){
+        var isPlaying = S.current && S.current.title===t.title && S.current.artist===t.artist;
+        var alt = t.artist && t.artist !== alb.artist ? '<div class="mob-alb-trk-by">'+esc(t.artist)+'</div>' : '';
+        return '<div class="mob-alb-trk'+(isPlaying?' playing':'')+'" onclick="playAlbumAt(\''+alb.id+'\','+i+')">'+
+          '<div class="mob-alb-trk-n">'+(isPlaying?'▶':(t.trackNum||i+1))+'</div>'+
+          '<div class="mob-alb-trk-tt"><div class="mob-alb-trk-ti">'+esc(t.title)+'</div>'+alt+'</div>'+
+          '<div class="mob-alb-trk-dur">'+fmtDur(t.duration)+'</div>'+
+        '</div>';
+      }).join('');
+
+  var av = document.getElementById('album-view');
+  av.innerHTML = '<div class="mob-alb">'+
+    '<button class="mob-alb-back" onclick="go(\'library\')">←</button>'+
+    '<div class="mob-alb-art" onclick="toggleSidePlayer()">'+art+'</div>'+
+    '<div class="mob-alb-eyebrow">Album · '+(alb.year||'')+(alb.year&&alb.genre?' · ':'')+(alb.genre?esc(alb.genre):'')+'</div>'+
+    '<h1 class="mob-alb-title">'+esc(alb.title)+'</h1>'+
+    '<div class="mob-alb-artist">'+esc(alb.artist||'Unknown Artist')+'</div>'+
+    '<div class="mob-alb-specs">'+
+      '<span class="mob-alb-spec">'+fmt+'</span>'+
+      '<span class="mob-alb-spec">'+maxBit+'-bit / '+srLabel+'</span>'+
+      (isHi?'<span class="mob-alb-spec hi">HI-RES</span>':'')+
+    '</div>'+
+    '<div class="mob-alb-actions">'+
+      '<button class="mob-alb-play" onclick="playAlbum(\''+alb.id+'\')">▶ Play</button>'+
+      '<button class="mob-alb-shuf" onclick="playAlbumShuffle(\''+alb.id+'\')">⇄</button>'+
+    '</div>'+
+    '<div class="mob-alb-stats">'+
+      (alb.tracks||[]).length+' tracks'+(totalSec?' · '+runtime:'')+
+    '</div>'+
+    '<div class="mob-alb-tracks">'+tracksHtml+'</div>'+
+  '</div>';
 }
 
 // ════════════════════════════════════════════════════════
