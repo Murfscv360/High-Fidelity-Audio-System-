@@ -1,10 +1,10 @@
 // ═══════════════════════════════════════════════════
-// AURALIS Service Worker v3.3
+// AURALIS Service Worker v3.4
 // Strategy: network-first for HTML; cache-first for assets;
 // streaming/audio requests bypass cache entirely (audit MEDIUM-6).
 // ═══════════════════════════════════════════════════
 
-const CACHE   = 'auralis-v3.3';
+const CACHE   = 'auralis-v3.4';
 const SHELL   = ['/manifest.json'];
 
 // Paths that must NEVER be cached (audio streams, API responses that change).

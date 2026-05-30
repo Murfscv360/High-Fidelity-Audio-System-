@@ -589,7 +589,11 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
   background:transparent; padding:0; border-radius:0;
 }
 .sb-item.on .sb-count{ color:var(--ac); }
-.sb-footer{ padding:14px 22px 18px; border-top:1px solid var(--b1); }
+.sb-footer{ padding:14px 22px 14px; border-top:1px solid var(--b1); }
+.sb-build{
+  margin-top:8px; font-family:var(--ff-m); font-size:9.5px; letter-spacing:.1em;
+  color:var(--t4); text-transform:uppercase;
+}
 
 /* Larger covers, less text noise — Tidal-style */
 .grid{
@@ -1203,6 +1207,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
       <div class="sb-item" onclick="openImport()">Import</div>
       <div class="sb-item" onclick="showConnectModal()">Connection</div>
       <div class="sb-item" data-nav="settings"    onclick="go('settings')">Settings</div>
+      <div class="sb-item" onclick="forceRefreshApp()" style="color:var(--gold)">↻ Force refresh</div>
     </div>
     <div class="sb-footer">
       <div class="sb-db">
@@ -1212,6 +1217,7 @@ button{font-family:inherit;cursor:pointer;border:none;background:none}
           <div class="sb-db-text" style="color:var(--t4);font-size:9px" id="dbSub">No tracks loaded</div>
         </div>
       </div>
+      <div class="sb-build" id="sbBuild">build v3.4 · loading…</div>
     </div>
     <!-- AUDIO QUALITY PANEL — persistent, populated by updateNowPlaying / openAlbum -->
     <div class="sb-quality" id="sbQuality">
@@ -2887,6 +2893,31 @@ async function autoPlaylistFromAlbum(seedId){
   S.queue = newQ; S.qIdx = 0;
   playEntry(0);
   if (typeof openAlbum === 'function' && S.currentAlbumId) openAlbum(S.currentAlbumId);
+}
+
+// Build-version label + force-refresh helper. Lets the user verify what's actually rendering
+// and self-rescue from a stuck service worker (the "still seeing old screen" trap) without DevTools.
+var __AURALIS_BUILD = 'v3.4 · 2026-05-30 · ' + Math.random().toString(36).slice(2,7);
+(function(){
+  try {
+    var el = document.getElementById('sbBuild');
+    if (el) el.textContent = 'BUILD ' + __AURALIS_BUILD;
+  } catch(_){}
+})();
+async function forceRefreshApp(){
+  try {
+    if ('serviceWorker' in navigator) {
+      var regs = await navigator.serviceWorker.getRegistrations();
+      for (var i = 0; i < regs.length; i++) await regs[i].unregister();
+    }
+    if ('caches' in window) {
+      var keys = await caches.keys();
+      await Promise.all(keys.map(function(k){ return caches.delete(k); }));
+    }
+    if (window.localStorage) localStorage.removeItem('nav_url'); // keep nav_user/pass for convenience
+  } catch(e){ console.warn(e); }
+  // Hard reload bypassing cache
+  location.replace(location.pathname + '?bust=' + Date.now());
 }
 
 // Side-player (right-docked panel) toggle.
