@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<meta name="theme-color" content="#0E141B">
+<meta name="description" content="Auralis — hi-res audio library player. Stream FLAC, ALAC, DSD, MQA, 24-bit lossless from your self-hosted Navidrome server.">
+<title>Auralis — Hi-Res Audio Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+<link rel="manifest" href="manifest.json">
+<style>
+:root{
+  --ink:#0E141B; --deep:#11181F; --panel:#1A2230; --raised:#222A36;
+  --sidebar-bg:#0B1118;
+  --t1:#F2F2F2; --t2:#9AA1AB; --t3:#6B7280; --t4:#3F4753;
+  --ac:#4db8ff; --acd:rgba(77,184,255,.12);
+  --gold:#E8B33A; --green:#3ecf7a; --purple:#9b6dd4;
+  --b0:rgba(255,255,255,.04); --b1:rgba(255,255,255,.08); --b2:rgba(255,255,255,.14);
+  --ff:'Inter',-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Roboto,sans-serif;
+  --ff-m:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{background:var(--ink);color:var(--t1);font-family:var(--ff);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;letter-spacing:0;line-height:1.5;font-feature-settings:'ss01','cv11'}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:none;background:none}
+
+/* ── HERO ───────────────────────────────────────────── */
+.hero{
+  position:relative; min-height:100vh; overflow:hidden;
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+  text-align:center; padding:clamp(40px,8vw,80px) clamp(20px,4vw,40px);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(77,184,255,.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 80%, rgba(155,109,212,.12) 0%, transparent 50%),
+    linear-gradient(180deg, #0E141B 0%, #06090D 100%);
+}
+.hero::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background-image:
+    radial-gradient(rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size:20px 20px;
+}
+.nav{
+  position:absolute; top:0; left:0; right:0; z-index:5;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:clamp(18px,2.5vw,28px) clamp(20px,4vw,48px);
+}
+.nav-mark{display:flex; align-items:center; gap:10px;}
+.nav-bars{display:flex; align-items:flex-end; gap:2px; height:18px;}
+.nav-bars span{display:block; width:3px; background:var(--ac); border-radius:1.5px;}
+.nav-bars span:nth-child(1){height:8px}
+.nav-bars span:nth-child(2){height:14px}
+.nav-bars span:nth-child(3){height:18px}
+.nav-bars span:nth-child(4){height:11px}
+.nav-word{font-weight:700; letter-spacing:.22em; font-size:14px; text-transform:uppercase}
+.nav-links{display:flex; gap:clamp(16px,2.5vw,28px); font-size:13.5px; font-weight:500;}
+.nav-links a{color:var(--t2); transition:color .15s;}
+.nav-links a:hover{color:var(--t1);}
+@media (max-width:640px){.nav-links{display:none}}
+.hero-wave{
+  display:flex; align-items:flex-end; gap:6px; height:56px; margin-bottom:24px;
+}
+.hero-wave span{
+  display:block; width:6px; background:linear-gradient(180deg, var(--ac), #7ed0ff);
+  border-radius:3px; box-shadow:0 0 14px rgba(77,184,255,.55);
+  animation:wave 1.4s ease-in-out infinite;
+}
+.hero-wave span:nth-child(1){height:20px; animation-delay:0s}
+.hero-wave span:nth-child(2){height:36px; animation-delay:.12s}
+.hero-wave span:nth-child(3){height:52px; animation-delay:.24s}
+.hero-wave span:nth-child(4){height:56px; animation-delay:.36s}
+.hero-wave span:nth-child(5){height:48px; animation-delay:.48s}
+.hero-wave span:nth-child(6){height:32px; animation-delay:.6s}
+.hero-wave span:nth-child(7){height:20px; animation-delay:.72s}
+@keyframes wave{0%,100%{transform:scaleY(.35);opacity:.55}50%{transform:scaleY(1);opacity:1}}
+.hero-eyebrow{
+  font-family:var(--ff-m); font-size:clamp(10px,1.2vw,12px);
+  letter-spacing:.4em; color:var(--ac); text-transform:uppercase;
+  margin-bottom:18px;
+  display:flex; align-items:center; gap:14px;
+}
+.hero-eyebrow::before,.hero-eyebrow::after{
+  content:""; display:block; width:32px; height:1px;
+  background:linear-gradient(90deg,transparent,var(--ac),transparent);
+}
+h1.hero-title{
+  font-weight:800; font-size:clamp(44px,9vw,108px); line-height:.95;
+  letter-spacing:-0.035em; margin-bottom:18px; max-width:1100px;
+  background:linear-gradient(180deg, #ffffff 0%, #b8c4d2 100%);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero-sub{
+  max-width:680px; font-size:clamp(15px,1.6vw,20px); font-weight:400;
+  color:var(--t2); line-height:1.55; margin-bottom:36px;
+}
+.hero-sub strong{color:var(--t1); font-weight:600;}
+.hero-cta-row{
+  display:flex; flex-wrap:wrap; gap:14px; justify-content:center; margin-bottom:48px;
+}
+.cta-primary,.cta-secondary{
+  display:inline-flex; align-items:center; gap:8px;
+  padding:14px 28px; border-radius:32px;
+  font-weight:700; font-size:15px; letter-spacing:.005em;
+  transition:transform .12s, opacity .15s, background .15s;
+}
+.cta-primary{
+  background:var(--t1); color:#0E141B;
+  box-shadow:0 8px 24px rgba(77,184,255,.25);
+}
+.cta-primary:hover{background:#fff;}
+.cta-primary:active{transform:translateY(1px);}
+.cta-secondary{
+  background:transparent; color:var(--t1); border:1.5px solid var(--b2);
+}
+.cta-secondary:hover{background:rgba(255,255,255,.06); border-color:var(--t2);}
+.hero-formats{
+  display:flex; flex-wrap:wrap; gap:8px 18px; justify-content:center;
+  font-family:var(--ff-m); font-size:11px; color:var(--t3); letter-spacing:.18em;
+}
+.hero-formats span{position:relative;}
+.hero-formats span:not(:last-child)::after{
+  content:""; position:absolute; right:-10px; top:50%; transform:translateY(-50%);
+  width:3px; height:3px; background:var(--t4); border-radius:50%;
+}
+
+/* ── SECTIONS ─────────────────────────────────────── */
+section{padding:clamp(60px,8vw,120px) clamp(24px,5vw,60px); max-width:1320px; margin:0 auto;}
+.sec-eyebrow{
+  font-family:var(--ff-m); font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--ac); margin-bottom:14px; font-weight:500;
+}
+.sec-title{
+  font-weight:800; font-size:clamp(28px,4.5vw,52px); line-height:1.05;
+  letter-spacing:-0.025em; margin-bottom:18px; max-width:780px;
+}
+.sec-lead{
+  font-size:clamp(15px,1.4vw,18px); color:var(--t2); line-height:1.55;
+  max-width:680px; margin-bottom:48px;
+}
+
+/* ── FEATURES ─────────────────────────────────────── */
+.features{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:clamp(16px,2vw,24px);
+}
+.feature{
+  padding:clamp(20px,2.5vw,28px);
+  background:var(--panel); border:1px solid var(--b1); border-radius:14px;
+  transition:transform .2s, border-color .2s;
+}
+.feature:hover{transform:translateY(-3px); border-color:var(--b2);}
+.feature-icon{
+  width:42px; height:42px; border-radius:10px;
+  background:linear-gradient(135deg, rgba(77,184,255,.18), rgba(77,184,255,.04));
+  border:1px solid rgba(77,184,255,.32);
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; margin-bottom:14px;
+}
+.feature h3{
+  font-weight:700; font-size:17px; letter-spacing:-0.01em; color:var(--t1);
+  margin-bottom:6px;
+}
+.feature p{font-size:14px; line-height:1.55; color:var(--t2);}
+
+/* ── FORMAT GRID ──────────────────────────────────── */
+.formats-grid{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
+  gap:14px;
+}
+.fmt-card{
+  padding:18px 20px;
+  background:var(--b0); border:1px solid var(--b1); border-radius:10px;
+}
+.fmt-card-tag{
+  display:inline-block; padding:3px 8px; border-radius:5px;
+  font-family:var(--ff-m); font-size:10px; letter-spacing:.16em; text-transform:uppercase;
+  font-weight:600; margin-bottom:10px;
+}
+.fmt-card.hi .fmt-card-tag{background:rgba(232,179,58,.16); color:var(--gold); border:1px solid rgba(232,179,58,.34);}
+.fmt-card.std .fmt-card-tag{background:rgba(77,184,255,.14); color:var(--ac); border:1px solid rgba(77,184,255,.3);}
+.fmt-card.lossy .fmt-card-tag{background:rgba(255,255,255,.05); color:var(--t3); border:1px solid var(--b1);}
+.fmt-card-name{
+  font-weight:700; font-size:16px; letter-spacing:-0.005em; color:var(--t1); margin-bottom:4px;
+}
+.fmt-card-desc{font-size:12.5px; color:var(--t3); line-height:1.45;}
+
+/* ── SCREENSHOTS ──────────────────────────────────── */
+.shots{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  gap:clamp(14px,1.8vw,22px);
+}
+.shot{
+  border-radius:12px; overflow:hidden; border:1px solid var(--b1);
+  box-shadow:0 12px 32px rgba(0,0,0,.5);
+  transition:transform .25s;
+}
+.shot:hover{transform:scale(1.02);}
+.shot img{width:100%; height:auto; display:block;}
+.shot-cap{
+  padding:10px 14px; font-family:var(--ff-m); font-size:11px;
+  letter-spacing:.1em; color:var(--t3); background:var(--panel);
+  text-transform:uppercase;
+}
+
+/* ── SPECS TABLE ──────────────────────────────────── */
+.specs{
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:0; border-top:1px solid var(--b1);
+}
+.spec{
+  padding:18px 0; border-bottom:1px solid var(--b1);
+  display:flex; flex-direction:column; gap:4px; padding-right:24px;
+}
+.spec-key{
+  font-family:var(--ff-m); font-size:10.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--t3); font-weight:500;
+}
+.spec-val{font-size:15px; color:var(--t1); font-weight:500; letter-spacing:-0.005em;}
+
+/* ── CTA STRIP ────────────────────────────────────── */
+.cta-strip{
+  text-align:center; padding:clamp(70px,9vw,120px) 24px;
+  background:linear-gradient(135deg, rgba(77,184,255,.08) 0%, rgba(155,109,212,.06) 100%);
+  border-top:1px solid var(--b1); border-bottom:1px solid var(--b1);
+}
+.cta-strip h2{
+  font-weight:800; font-size:clamp(28px,4vw,46px); margin-bottom:10px;
+  letter-spacing:-0.025em;
+}
+.cta-strip p{color:var(--t2); margin-bottom:28px; font-size:16px;}
+
+/* ── FOOTER ────────────────────────────────────────── */
+footer{
+  padding:48px clamp(24px,5vw,60px); max-width:1320px; margin:0 auto;
+  display:flex; justify-content:space-between; flex-wrap:wrap; gap:18px; align-items:center;
+  font-family:var(--ff-m); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--t4); border-top:1px solid var(--b1);
+}
+footer a{color:var(--t3); transition:color .15s;}
+footer a:hover{color:var(--ac);}
+
+@media(prefers-reduced-motion:reduce){
+  .hero-wave span{animation:none; opacity:.7;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav class="nav">
+  <div class="nav-mark">
+    <div class="nav-bars"><span></span><span></span><span></span><span></span></div>
+    <div class="nav-word">Auralis</div>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#formats">Formats</a>
+    <a href="#screens">Screens</a>
+    <a href="#specs">Specs</a>
+    <a href="/app/" style="color:var(--ac)">Launch ↗</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-wave"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="hero-eyebrow">Hi-Res Audio · Self-Hosted</div>
+  <h1 class="hero-title">Your lossless library, in your pocket.</h1>
+  <p class="hero-sub">Stream <strong>FLAC, ALAC, DSD, MQA, 24-bit / 96 kHz</strong> bit-perfect from a Navidrome server you control. No Spotify, no Tidal subscription. Just the audio you already own, anywhere you happen to be.</p>
+  <div class="hero-cta-row">
+    <a href="/app/" class="cta-primary">▶ Launch Auralis</a>
+    <a href="https://github.com/Murfscv360/High-Fidelity-Audio-System-" class="cta-secondary" target="_blank">View on GitHub</a>
+  </div>
+  <div class="hero-formats"><span>FLAC</span><span>ALAC</span><span>DSD</span><span>MQA</span><span>24-BIT / 96 KHZ</span><span>WAV</span><span>AIFF</span></div>
+</section>
+
+<!-- FEATURES -->
+<section id="features">
+  <div class="sec-eyebrow">What makes Auralis different</div>
+  <h2 class="sec-title">Built for audiophiles who own their music.</h2>
+  <p class="sec-lead">Modern streaming services treat hi-res as an upsell. Auralis treats it as the baseline. Every byte stays under your control — the app is just the glue between your NAS and your phone.</p>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">⊞</div>
+      <h3>Self-hosted backend</h3>
+      <p>Your library lives on your QNAP, Synology, or any Linux box running Navidrome. No cloud database, no telemetry.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⚡</div>
+      <h3>Cloudflare-tunnel ready</h3>
+      <p>Vercel proxy + Cloudflare quick-tunnel ships traffic to your NAS without port-forwarding or DNS work.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">▣</div>
+      <h3>Installable PWA</h3>
+      <p>Add to home screen on iOS, Android, or desktop. Service-worker caching makes the app shell offline-capable.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">♪</div>
+      <h3>True bit-perfect</h3>
+      <p>The Subsonic /stream endpoint passes native format through. No transcoding unless you ask for it.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">▶</div>
+      <h3>Web Audio waveform</h3>
+      <p>Real 32-band FFT visualiser via AudioContext. Not a decorative animation — actual frequency analysis.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">✦</div>
+      <h3>On-device AI curation</h3>
+      <p>Made-for-you shelves driven by your listening history. No API calls, no telemetry, learning happens in your browser.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⧉</div>
+      <h3>MusicBrainz enrichment</h3>
+      <p>Release date, label, country, catalog number, type — pulled from MusicBrainz with two-layer cache. Cover Art Archive fallback.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">◧</div>
+      <h3>Side player + mini player</h3>
+      <p>Right-docked Now Playing panel for desktop, floating mini-player overlay, mobile bottom-sheet variant. Pick your workflow.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">⛶</div>
+      <h3>Responsive everywhere</h3>
+      <p>Fully fluid clamp()-based typography. Desktop, tablet, phone, ultra-wide — the layout reflows to the viewport.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FORMATS -->
+<section id="formats">
+  <div class="sec-eyebrow">Audio format support</div>
+  <h2 class="sec-title">Everything from DSD to AAC.</h2>
+  <p class="sec-lead">Auralis is format-transparent — whatever Navidrome's `stream` endpoint hands us, we play. Hi-res is treated as the default, not the exception.</p>
+
+  <div class="formats-grid">
+    <div class="fmt-card hi"><div class="fmt-card-tag">Hi-Res Lossless</div><div class="fmt-card-name">FLAC</div><div class="fmt-card-desc">Up to 24-bit / 192 kHz. Free Lossless Audio Codec.</div></div>
+    <div class="fmt-card hi"><div class="fmt-card-tag">Hi-Res Lossless</div><div class="fmt-card-name">ALAC</div><div class="fmt-card-desc">Apple Lossless. 16- or 24-bit, up to 384 kHz.</div></div>
+    <div class="fmt-card hi"><div class="fmt-card-tag">Studio Master</div><div class="fmt-card-name">DSD</div><div class="fmt-card-desc">DSF / DFF · 1-bit, 2.8 MHz (DSD64) to 22.5 MHz (DSD512).</div></div>
+    <div class="fmt-card hi"><div class="fmt-card-tag">Hi-Res Lossless</div><div class="fmt-card-name">MQA</div><div class="fmt-card-desc">Master Quality Authenticated. Origami-encoded studio masters.</div></div>
+    <div class="fmt-card std"><div class="fmt-card-tag">Lossless</div><div class="fmt-card-name">WAV</div><div class="fmt-card-desc">Uncompressed PCM. RIFF container.</div></div>
+    <div class="fmt-card std"><div class="fmt-card-tag">Lossless</div><div class="fmt-card-name">AIFF</div><div class="fmt-card-desc">Uncompressed PCM. Apple's IFF container.</div></div>
+    <div class="fmt-card std"><div class="fmt-card-tag">Lossless</div><div class="fmt-card-name">APE</div><div class="fmt-card-desc">Monkey's Audio. High-ratio lossless compression.</div></div>
+    <div class="fmt-card lossy"><div class="fmt-card-tag">Lossy</div><div class="fmt-card-name">MP3</div><div class="fmt-card-desc">MPEG-1 Layer III. Up to 320 kbps CBR or V0 VBR.</div></div>
+    <div class="fmt-card lossy"><div class="fmt-card-tag">Lossy</div><div class="fmt-card-name">AAC / M4A</div><div class="fmt-card-desc">Advanced Audio Coding. Up to 320 kbps.</div></div>
+    <div class="fmt-card lossy"><div class="fmt-card-tag">Lossy</div><div class="fmt-card-name">Ogg Vorbis</div><div class="fmt-card-desc">Through Navidrome's transcode if enabled.</div></div>
+  </div>
+</section>
+
+<!-- SCREENSHOTS -->
+<section id="screens">
+  <div class="sec-eyebrow">The interface</div>
+  <h2 class="sec-title">Apple Music / Tidal design language.</h2>
+  <p class="sec-lead">Clean typography, generous spacing, cover-forward layouts. Soundwave at the top, persistent audio-quality panel in the sidebar, right-docked Now Playing on desktop, native mobile views on phone.</p>
+
+  <div class="shots">
+    <div class="shot"><img src="docs/screenshots/01-desktop-home.png" alt="Desktop home"><div class="shot-cap">Desktop · Home</div></div>
+    <div class="shot"><img src="docs/screenshots/03-album-detail.png" alt="Album detail"><div class="shot-cap">Album · Detail with MusicBrainz</div></div>
+    <div class="shot"><img src="docs/screenshots/04-side-player.png" alt="Side player"><div class="shot-cap">Side Player · Right rail</div></div>
+    <div class="shot"><img src="docs/screenshots/09-tablet.png" alt="Tablet"><div class="shot-cap">Tablet · Responsive</div></div>
+    <div class="shot"><img src="docs/screenshots/08-mobile-launch.png" alt="Mobile launch"><div class="shot-cap">Mobile · Launch screen</div></div>
+    <div class="shot"><img src="docs/screenshots/02-desktop-albums.png" alt="Library"><div class="shot-cap">Library · Cover-forward grid</div></div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section id="specs">
+  <div class="sec-eyebrow">Technical specification</div>
+  <h2 class="sec-title">Vanilla JS, no framework, ~150 KB.</h2>
+  <p class="sec-lead">The whole app is a single HTML file with inline CSS and inline JavaScript. No build step, no bundler, no React. The simplest thing that could possibly work.</p>
+
+  <div class="specs">
+    <div class="spec"><div class="spec-key">Frontend</div><div class="spec-val">Vanilla JS + inline CSS · ~150 KB</div></div>
+    <div class="spec"><div class="spec-key">Type system</div><div class="spec-val">Inter · JetBrains Mono</div></div>
+    <div class="spec"><div class="spec-key">State</div><div class="spec-val">IndexedDB + localStorage</div></div>
+    <div class="spec"><div class="spec-key">Audio</div><div class="spec-val">HTMLAudioElement + Web Audio API</div></div>
+    <div class="spec"><div class="spec-key">Backend</div><div class="spec-val">Navidrome (Subsonic API)</div></div>
+    <div class="spec"><div class="spec-key">Hosting</div><div class="spec-val">Vercel static + rewrites</div></div>
+    <div class="spec"><div class="spec-key">Tunnel</div><div class="spec-val">Cloudflare quick-tunnel</div></div>
+    <div class="spec"><div class="spec-key">PWA</div><div class="spec-val">Manifest + service worker v3.4</div></div>
+    <div class="spec"><div class="spec-key">Enrichment</div><div class="spec-val">MusicBrainz · Cover Art Archive</div></div>
+    <div class="spec"><div class="spec-key">AI curation</div><div class="spec-val">On-device · no API calls</div></div>
+    <div class="spec"><div class="spec-key">Test rig</div><div class="spec-val">14 suites · ~400 assertions</div></div>
+    <div class="spec"><div class="spec-key">License</div><div class="spec-val">MIT</div></div>
+  </div>
+</section>
+
+<!-- CTA STRIP -->
+<section class="cta-strip" style="max-width:none;">
+  <h2>Ready to listen?</h2>
+  <p>Point Auralis at your Navidrome server and start playing.</p>
+  <a href="/app/" class="cta-primary">▶ Launch Auralis</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>Auralis · v3.4 · MIT</div>
+  <div>
+    <a href="https://github.com/Murfscv360/High-Fidelity-Audio-System-" target="_blank">GitHub</a> ·
+    <a href="https://www.navidrome.org" target="_blank">Navidrome</a> ·
+    <a href="/app/">Launch</a>
+  </div>
+</footer>
+
+<script>
+// Smooth-scroll anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const t = document.querySelector(a.getAttribute('href'));
+    if (t) { e.preventDefault(); t.scrollIntoView({behavior:'smooth', block:'start'}); }
+  });
+});
+</script>
+</body>
+</html>
